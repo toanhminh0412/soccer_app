@@ -2,7 +2,7 @@
 {% load soccer_extras %}
 {% block title %}{{ game.name }}{% endblock %}
 {% block content %}
-<div class="container mt-5">
+<div class="container mt-100">
     <div class="box-container">
         <h2 class="text-underline">{{ game.name }}</h1>
         <h4 class="text-muted">{{ game.location }}</h4>
@@ -16,6 +16,28 @@
                 <div class="col-md-6"><strong class="me-2">Number of teams:</strong>{{ game.team_num }}</div>
             </div>
             <div class="mt-2"><strong class="me-2">Description:</strong>{{ game.description }}</div>
+        </div>
+        <div class="mt-3">
+            <div>
+                <h5>Bench</h5>
+                <div class="row">
+                    {% for player in game.get_bench.players.all %}
+                    <div class="col-4 col-lg-2 tag-container bg-light text-center mt-1">{{player.name}}</div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="mt-3">
+                <div class="row">
+                    {% for team in game.get_teams %}
+                    <div class="col-6 col-lg-{{team.get_team_num_on_a_row_lg}} mt-1">
+                        <h5>Team {{team.team_number}}</h5>
+                        {% for player in team.players.all %}
+                        <div class="tag-container {{team.get_color}} text-center mt-1">{{player.name}}</div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
     </div>
 </div>
