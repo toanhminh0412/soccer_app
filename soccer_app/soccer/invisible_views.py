@@ -26,7 +26,7 @@ def create_game(request):
             new_game.save()
 
             # Make new teams for the game based on number of teams specified
-            for i in range (0, new_game.team_num):
+            for i in range (0, new_game.team_num + 1):
                 GameTeam.objects.create(game=new_game, team_number=i)
 
             # Game creator is originally put on the bench
