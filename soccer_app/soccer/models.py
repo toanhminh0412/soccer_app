@@ -1,5 +1,5 @@
 from django.db import models
-from django.core.validators import RegexValidator, MinValueValidator
+from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
 
 # Create your models here.
 # User model of this application
@@ -60,7 +60,7 @@ class Game(models.Model):
     date = models.DateTimeField(null=False, blank=False)
     location = models.CharField(max_length=200, null=False, blank=False, default='location')
     max_player_num = models.IntegerField(null=True, blank=True)
-    team_num = models.IntegerField(default=2, validators=[MinValueValidator(1)])
+    team_num = models.IntegerField(default=2, validators=[MinValueValidator(1), MaxValueValidator(8)])
     visible_to_everyone = models.BooleanField(default=True)
     description = models.CharField(max_length=300, null=False, blank=False)
 
@@ -82,6 +82,25 @@ class Game(models.Model):
     def get_creator(self):
         return self.organizers.first()
 
+    # Get bench - team number 0 of a game
+    def get_bench(self):
+        return self.gameteam_set.get(team_number=0)
+
+    # Get all teams of a game other than the bench
+    def get_teams(self):
+        return self.gameteam_set.exclude(team_number=0)
+
+    # Get number of teams rendered on a row based on the game's number of teams on a large (lg) screen
+    def get_team_num_on_a_row_lg(self):
+        if self.team_num == 1:
+            return 1
+        if self.team_num == 2:
+            return 2
+        if self.team_num < 7:
+            return 3
+        return 4
+        
+
 # Teams for a specific game. A game can have one or many teams that include players 
 # who participate in that game
 class GameTeam(models.Model):
@@ -96,3 +115,25 @@ class GameTeam(models.Model):
 
     def __str__(self):
         return f'Team {self.team_number} of game {self.game.name}'
+
+    # Assign a color to a game team based on the team's number
+    def get_color(self):
+        match self.team_number:
+            case 1:
+                return "bg-blue-200"
+            case 2:
+                return "bg-red-200"
+            case 3:
+                return "bg-green-200"
+            case 4:
+                return "bg-yellow-200"
+            case 5:
+                return "bg-purple-200"
+            case 6:
+                return "bg-pink-200"
+            case 7:
+                return "bg-orange-200"
+            case 8:
+                return "bg-teal-200"
+            case _:
+                return "bg-light"
