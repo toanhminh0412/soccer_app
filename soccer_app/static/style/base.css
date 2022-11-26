@@ -1,0 +1,53 @@
+/*** GLOBAL ***/
+* {
+    margin: 0;
+    box-sizing: border-box;
+    font-size: 12px;
+}
+
+@media only screen and (min-width: 700px) {
+    * {
+        font-size: 16px;
+    }
+}
+
+@media only screen and (min-width: 1020px) {
+    * {
+        font-size: 20px;
+    }
+}
+
+body {
+    background-color: rgb(220 252 231);
+}
+
+/*** Containers ***/
+.box-container {
+    margin-left: auto;
+    margin-right: auto;
+    padding: 20px;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    background-color: #ffffff;
+    border-radius: 0.375rem;
+}
+
+/*** Forms ***/
+#login-form {
+    margin-top: 150px;
+}
+
+@media only screen and (min-width: 1020px) {
+    #login-form {
+        width: 60%;
+    }
+}
+
+/*** Game display ***/
+.game-body {
+    transition-duration: 0.25s;
+}
+
+.game-body:hover,
+.game-body:active {
+    background-color: rgb(226 232 240);
+}
