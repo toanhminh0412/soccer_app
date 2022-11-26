@@ -2,3 +2,18 @@
 .text-underline {
     text-decoration: underline;
 }
+
+/*** Spacings ***/
+.mt-100 {
+    margin-top: 100px;
+}
+
+/*** Background colors ***/
+.bg-blue-200 {background-color: rgb(191 219 254);}
+.bg-red-200 {background-color: rgb(254 202 202);}
+.bg-green-200 {background-color: rgb(187 247 208);}
+.bg-yellow-200 {background-color: rgb(254 240 138);}
+.bg-purple-200 {background-color: rgb(233 213 255);}
+.bg-pink-200 {background-color: rgb(251 207 232);}
+.bg-orange-200 {background-color: rgb(254 215 170);}
+.bg-teal-200 {background-color: rgb(153 246 228);}
