@@ -59,3 +59,8 @@ body {
 .game-body:active {
     background-color: rgb(226 232 240);
 }
+
+/*** Text ***/
+.helper-text {
+    font-size: .8em;
+}

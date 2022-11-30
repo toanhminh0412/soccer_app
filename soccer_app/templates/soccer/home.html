@@ -87,9 +87,16 @@
                         <div><strong class="me-2">Spaces left:</strong>{{ game.max_player_num|subtract:game.total_players }}</div>
                         <div><strong class="me-2">Number of teams:</strong>{{ game.team_num }}</div>
                         <div><strong class="me-2">Description:</strong>{{ game.description }}</div>
+                        <div class="mt-3 fst-italic helper-text">Click on the game container body to see the details</div>
                     </div>
                 </div>
             </a>
+            <div class="card-footer">
+                <div class="w-fit ms-auto">
+                    <a href="/game/{{ game.id }}/" type="button" class="btn btn-secondary btn-sm">View details</a>
+                    <a href="#" type="button" class="btn btn-success btn-sm">Join game</a>
+                </div>
+            </div>
         </div>
         {% endfor %}
     </div>

@@ -17,3 +17,9 @@
 .bg-pink-200 {background-color: rgb(251 207 232);}
 .bg-orange-200 {background-color: rgb(254 215 170);}
 .bg-teal-200 {background-color: rgb(153 246 228);}
+
+/*** Sizing ***/
+.w-fit {
+    width: fit-content;
+    height: fit-content;
+}

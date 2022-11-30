@@ -25,7 +25,8 @@
     <nav class="navbar navbar-expand-lg bg-success">
         <div class="container-md">
             <a class="navbar-brand fw-semibold text-light" href="/">SOCCERAPP</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <div class="d-lg-none ms-auto me-3 text-white">Hello <strong>{{name}}</strong></div>
+            <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>   
             <div class="collapse navbar-collapse" id="navbarSupportedContent">  
@@ -47,6 +48,7 @@
                     {% endif %}
                 </ul>
             </div>
+            <div class="d-none d-lg-block ms-auto me-3 text-white">Hello <strong>{{name}}</strong></div>
         </div>
     </nav>
     {% block content %}{% endblock %}
