@@ -1,4 +1,8 @@
 Implementation order:
-1. Players can join a game.
-2. Admin have a different view of a game details. Ability to edit and delete games.
-3. Make a dashboard to manage games and teams
+1. Organizers can delete games
+2. Create an action menu on dashboard using offcanvas with four options
+- Create game
+- Create team
+- View games
+- View teams
+3. Organizers can move players from teams to teams
