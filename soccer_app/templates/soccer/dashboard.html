@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+
+<!-- Form to create a new game -->
+{% include 'soccer/components/form/game.html' %}
+
+<!-- Form to edit each game -->
+{% for game in your_games %}
+{% include 'soccer/components/form/game.html' %}
+{% endfor %}
+
+<div class="container mt-100">
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createGameFormModal">
+        Create game
+    </button>
+    
+    <!-- Display of games -->
+    <div class="mt-5">
+        {% for game in your_games %}
+        {% include 'soccer/components/container/game.html' %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+{% load static %}
+<script src="{% static 'js/home.js' %}"></script>
+{% endblock %}
