@@ -1,6 +1,8 @@
 from django.db import models
 from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
 
+from pytz import timezone
+
 # Create your models here.
 # User model of this application
 class User(models.Model):
@@ -99,7 +101,17 @@ class Game(models.Model):
         if self.team_num < 7:
             return 3
         return 4
-        
+
+    # Return a list of all players
+    def get_players(self):
+        players = []
+        for team in self.gameteam_set.all():
+            players.extend(team.players.all())
+        return players
+
+    # Get string representation of a game's date
+    def get_date_str(self):
+        return self.date.astimezone(timezone('PST8PDT')).strftime('%Y-%m-%dT%H:%M')
 
 # Teams for a specific game. A game can have one or many teams that include players 
 # who participate in that game
