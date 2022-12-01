@@ -25,18 +25,21 @@
     <nav class="navbar navbar-expand-lg bg-success">
         <div class="container-md">
             <a class="navbar-brand fw-semibold text-light" href="/">SOCCERAPP</a>
-            <div class="d-lg-none ms-auto me-3 text-white">Hello <strong>{{name}}</strong></div>
+            {% if user_id %}<div class="d-lg-none ms-auto me-3 text-white">Hello <strong>{{name}}</strong></div>{% endif %}
             <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>   
             <div class="collapse navbar-collapse" id="navbarSupportedContent">  
                 <ul class="navbar-nav ms-lg-3 me-auto mb-2 mb-lg-0">
-                    {% if request.path != '/login/' %}
+                    {% if user_id %}
                     <li class="nav-item">
-                        <a class="text-white nav-link active" aria-current="page" href="/">Games</a>
+                        <a class="text-white nav-link {% if request.path == '/' %}active{% endif %}" aria-current="page" href="/">Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a class="text-white nav-link" href="#">Teams</a>
+                        <a class="text-white nav-link {% if request.path == '/game/' %}active{% endif %}" aria-current="page" href="/game/">Games</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="text-white nav-link {% if request.path == '/team/' %}active{% endif %}" href="#">Teams</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="text-white nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -48,7 +51,7 @@
                     {% endif %}
                 </ul>
             </div>
-            <div class="d-none d-lg-block ms-auto me-3 text-white">Hello <strong>{{name}}</strong></div>
+            {% if user_id %}<div class="d-none d-lg-block ms-auto me-3 text-white">Hello <strong>{{name}}</strong></div>{% endif %}
         </div>
     </nav>
     {% block content %}{% endblock %}
