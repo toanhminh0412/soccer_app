@@ -1,17 +1,26 @@
-from django.http import HttpResponseNotFound
+from django.http import HttpResponseNotFound, JsonResponse
 from django.shortcuts import redirect
+from django.views.generic.edit import DeleteView
 from .forms import GameForm
 from .models import User, Game, GameTeam
+from .decorators import is_organizer
 
 # With no argument: Create a new game
 # With argument <game_id>: Edit game with id <game_id>
 def modify_game(request, **kwargs):
     if request.method == "POST":
-        game_id = kwargs['game_id']
+        game_id = kwargs.get('game_id', None)
 
-        form = GameForm(request.POST)
         # Get current user, which will be set to be the game organizer
         current_user = User.objects.get(id=request.session['user_id'])
+        if game_id:
+            game = Game.objects.get(id=game_id)
+            # If user isn't an organizer of the game, redirect to dashboard
+            if not game.is_organizer(current_user):
+                return redirect('/')
+
+        form = GameForm(request.POST)
+        
         if form.is_valid():
             game_data = form.cleaned_data
             
@@ -30,6 +39,7 @@ def modify_game(request, **kwargs):
             new_game.team_num = game_data['team_num']
             new_game.visible_to_everyone = game_data['visible_to_everyone']
             new_game.description = game_data['description']
+            new_game.save()
 
             # Add the current user as the game's organizer
             if not game_id:
@@ -84,7 +94,35 @@ def join_game(request, game_id):
     user = User.objects.get(id=user_id)
 
     # Player is put on bench when first join a game
-    game = Game.objects.get(id=game_id)
+    game = None
+    try:
+        game = Game.objects.get(id=game_id)
+    except Game.DoesNotExist:
+        return JsonResponse({'status': 404, 'message': 'Game not found'})
+
     game.gameteam_set.get(team_number=0).players.add(user)
     
     return redirect(f'/game/{game_id}/')
+
+# Delete a game
+def delete_game(request, game_id):
+    # Get current user
+    current_user = User.objects.get(id=request.session['user_id'])
+    game = None
+    try:
+        game = Game.objects.get(id=game_id)
+    except Game.DoesNotExist:
+        # Display 404 if game not found
+        return JsonResponse({'status': 404, 'message': 'Game not found'})
+    
+    # If user isn't an organizer of the game, redirect to dashboard
+    if not game.is_organizer(current_user):
+        return redirect('/')
+    
+    # Delete the game. Display success message
+    name = game.name
+    game.delete()
+    request.session['success'] = True
+    request.session['message'] = f'Game {name} deleted successfully'
+
+    return redirect('/')
