@@ -3,7 +3,7 @@
     <div class="card-header bg-success bg-opacity-75 text-white fw-semibold fs-4">
         {{ game.name }}
     </div>
-    <a class="text-black" style="text-decoration: none;" href="/game/{{game.id}}/">
+    <a class="text-black" style="text-decoration: none;" href="/game/{{game.id}}">
         <div class="card-body game-body">
             <h4 class="card-title">{{ game.date }}</h4>
             <h5 class="card-subtitle">{{ game.location }}</h5>
@@ -20,10 +20,10 @@
     <div class="card-footer">
         <div class="w-fit ms-auto">
             {% if request.path == '/' %}
-            <a href="#" type="button" class="btn btn-danger btn-sm">Delete game</a>
+            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteGame{{ game.id }}ConfirmationModal">Delete game</button>
             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editGame{{ game.id }}FormModal">Edit game</button>
             {% else %}
-            <a href="/game/{{ game.id }}/" type="button" class="btn btn-secondary btn-sm">View details</a>
+            <a href="/game/{{ game.id }}" type="button" class="btn btn-secondary btn-sm">View details</a>
             <a href="/join_game/{{ game.id }}" type="button" class="btn btn-success btn-sm {% if user in game.get_players %}disabled{% endif %}">Join game</a>
             {% endif %}
         </div>
