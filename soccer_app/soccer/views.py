@@ -20,6 +20,13 @@ class Dashboard(TemplateView):
             if len(game.organizers.filter(id=user_id)) > 0:
                 context['your_games'].append(game)
 
+        # Display success or error message if any
+        context['success'] = self.request.session.get('success', None)
+        context['message'] = self.request.session.get('message', None)
+        if context['success'] is not None:
+            del self.request.session['success']
+            del self.request.session['message']
+
         return context
 
 # GamesView that shows all the currently active game
