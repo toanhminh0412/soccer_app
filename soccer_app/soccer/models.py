@@ -113,6 +113,10 @@ class Game(models.Model):
     def get_date_str(self):
         return self.date.astimezone(timezone('PST8PDT')).strftime('%Y-%m-%dT%H:%M')
 
+    # Check if an user is an organizer of a game
+    def is_organizer(self, user):
+        return len(self.organizers.filter(id=user.id)) > 0
+
 # Teams for a specific game. A game can have one or many teams that include players 
 # who participate in that game
 class GameTeam(models.Model):
