@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
-{% block title %}All games{% endblock %}
+{% block title %}Games{% endblock %}
 {% block content %}
 <div class="container mt-150">
     <label class="fs-5 me-2 mt-5">View:</label>
     <select class="custom-select-tag mt-5">
         <option value="yours" selected>Your games</option>
-        <option value="alls">Browse games</option>
+        <option value="all">Browse games</option>
     </select>
 
     <!-- Display of all games -->
@@ -29,7 +29,7 @@
 </div>
 
 <script>
-    // Toggle viewing games and members
+    // Toggle viewing your games or all games
     $('.custom-select-tag').on('change', function() {
         const value = $(this).val();
         if (value === 'yours') {
