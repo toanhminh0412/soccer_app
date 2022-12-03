@@ -3,9 +3,11 @@ from .models import Game, Team
 
 # Form for creating a new game
 class GameForm(forms.ModelForm):
+    team = forms.CharField(max_length=10)
+
     class Meta:
         model = Game
-        fields = ['name', 'team', 'date', 'location', 'max_player_num', 'team_num', 'visible_to_everyone', 'description']
+        fields = ['name', 'date', 'location', 'max_player_num', 'team_num', 'visible_to_everyone', 'description']
 
 # Form for creating a new team
 class TeamForm(forms.ModelForm):
