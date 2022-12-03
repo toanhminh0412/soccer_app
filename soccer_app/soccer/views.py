@@ -51,3 +51,10 @@ class GameDetailView(DetailView):
     template_name = "soccer/game_detail.html"
     pk_url_kwarg = "game_id"
     context_object_name = "game"
+
+# A group detail page
+class GroupDetailView(DetailView):
+    model = Team
+    template_name = "soccer/group_detail.html"
+    pk_url_kwarg = "group_id"
+    context_object_name = "group"
