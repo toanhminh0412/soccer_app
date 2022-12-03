@@ -10,6 +10,9 @@
 {% include 'soccer/components/form/game.html' %}
 {% endfor %}
 
+<!-- Form to create a new team -->
+{% include 'soccer/components/form/group.html' %}
+
 <!-- Confirmation model for deleting games -->
 {% for game in your_games %}
 <div class="modal fade" id="deleteGame{{ game.id }}ConfirmationModal" tabindex="-1" aria-hidden="true">
@@ -32,7 +35,7 @@
 {% endfor %}
 
 
-<div class="container mt-100">
+<div class="container mt-150">
     <!-- Game create status message -->
     {% if message %}
     {% if success %}
@@ -48,19 +51,41 @@
 
     
     <!-- Button trigger modal -->
+    {% comment %}
     <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createGameFormModal">
         Create game
     </button>
+    {% endcomment %}
+
+    {% include 'soccer/components/menu/actions.html' %}
     
     <!-- Display of games -->
-    <div class="mt-5">
+    <div class="game-containers mt-5">
+        <h1>Your games</h1>
         {% for game in your_games %}
         {% include 'soccer/components/container/game.html' %}
         {% endfor %}
     </div>
+    {% if your_groups_as_captain|length > 0 %}
+    <div class="group-as-captain-containers d-none mt-5">
+        <h1>Groups that you are a captain of</h1>
+        {% for group in your_groups_as_captain %}
+        {% include 'soccer/components/container/group.html' %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if your_groups_as_cocaptain|length > 0 %}
+    <div class="group-as-cocaptain-containers d-none mt-5">
+        <h1>Groups that you are a co-captain of</h1>
+        {% for group in your_groups_as_cocaptain %}
+        {% include 'soccer/components/container/group.html' %}
+        {% endfor %}
+    </div>
+    {% endif %}
 </div>
 {% endblock %}
 {% block script %}
 {% load static %}
-<script src="{% static 'js/home.js' %}"></script>
+<script src="{% static 'js/dashboard.js' %}"></script>
 {% endblock %}
