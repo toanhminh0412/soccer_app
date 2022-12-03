@@ -1,13 +1,10 @@
-Implementation order:
-1. Organizers can delete games
-2. Create an action menu on dashboard using offcanvas with four options
-- Create game
-- Create group
-- View games
-- View groups
-3. Organizers can move players from teams to teams
-
-
 TODO:
 - View/edit/delete groups
 - Create game from groups. Make group field visible
+- Organizers can move players from teams to teams
+
+FUTURE:
+- Game pages: Upcoming games/Browse games
+- Game pages: Need to fix visibility of games
+- Group pages: Your groups/Browse groups
+
