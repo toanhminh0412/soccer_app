@@ -15,4 +15,5 @@ urlpatterns = [
     path('delete_game/<int:game_id>', invisible_views.delete_game, name='delete_game'),
 
     path('create_group', invisible_views.modify_group, name='create_group'),
+    path('group/<int:group_id>', views.GroupDetailView.as_view(), name='group_detail'),
 ]
