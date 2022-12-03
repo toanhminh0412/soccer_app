@@ -5,7 +5,7 @@
 <!-- Form to create a new game -->
 {% include 'soccer/components/form/game.html' %}
 
-<div class="container mt-100">
+<div class="container mt-150">
     <!-- Button trigger modal -->
     <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createGameFormModal">
         Create game
@@ -14,7 +14,10 @@
     <!-- Display of games -->
     <div class="mt-5">
         {% for game in all_games %}
+        <!-- Only render games that still have spaces -->
+        {% if game.total_players < game.max_player_num %}
         {% include 'soccer/components/container/game.html' %}
+        {% endif %}
         {% endfor %}
     </div>
 </div>
