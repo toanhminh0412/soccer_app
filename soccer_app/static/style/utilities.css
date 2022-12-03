@@ -8,6 +8,10 @@
     margin-top: 100px;
 }
 
+.mt-150 {
+    margin-top: 150px;
+}
+
 /*** Background colors ***/
 .bg-blue-200 {background-color: rgb(191 219 254);}
 .bg-red-200 {background-color: rgb(254 202 202);}
