@@ -1,9 +1,7 @@
-from django.http import HttpResponseNotFound, JsonResponse
+from django.http import JsonResponse
 from django.shortcuts import redirect
-from django.views.generic.edit import DeleteView
-from .forms import GameForm
-from .models import User, Game, GameTeam
-from .decorators import is_organizer
+from .forms import GameForm, TeamForm
+from .models import User, Game, GameTeam, Team, TeamAdmin
 
 # With no argument: Create a new game
 # With argument <game_id>: Edit game with id <game_id>
@@ -45,8 +43,6 @@ def modify_game(request, **kwargs):
             if not game_id:
                 new_game.organizers.add(current_user)
             
-            new_game.save()
-            
             if game_id:
                 # For editing games, if number of teams is higher then just add teams
                 # If number of teams stays the same then don't do anything
@@ -84,8 +80,8 @@ def modify_game(request, **kwargs):
         request.session['message'] = f'Failed to edit game {game.name}' if game_id else 'Failed to create game'
         return redirect('/')
 
-    # Sending other methods to this view will receive an 404
-    return HttpResponseNotFound("<h1>404</h1> This page doesn't support this method")
+    # Sending other methods to this view will receive an 400
+    return JsonResponse({'status': 400, 'message': "This page doesn't support this method"})
 
 
 # Player joins a game.
@@ -99,6 +95,10 @@ def join_game(request, game_id):
         game = Game.objects.get(id=game_id)
     except Game.DoesNotExist:
         return JsonResponse({'status': 404, 'message': 'Game not found'})
+
+    # Player can't join a full game
+    if game.total_players >= game.max_player_num:
+        return JsonResponse({'status': 403, 'message': "Can't join game. Game is full"})
 
     game.gameteam_set.get(team_number=0).players.add(user)
     
@@ -126,3 +126,36 @@ def delete_game(request, game_id):
     request.session['message'] = f'Game {name} deleted successfully'
 
     return redirect('/')
+
+# Create a group
+def modify_group(request, **kwargs):
+    if request.method == "POST":
+        group_id = kwargs.get('group_id', None)
+
+        # Get current user, which will be set to be the group captain
+        current_user = User.objects.get(id=request.session['user_id'])
+        
+        form = TeamForm(request.POST)
+
+        if form.is_valid():
+            group_data = form.cleaned_data
+            
+            # Create a new group
+            new_group = Team()
+            new_group.name = group_data['name']
+            if group_data['max_member_num'] is not None or group_data['max_member_num'] != -1:
+                new_group.max_member_num = group_data['max_member_num']
+            new_group.description = group_data['description']
+            new_group.save()
+            new_group.members.add(current_user)
+
+            # Make the creator captain of group
+            TeamAdmin.objects.create(team=new_group, user=current_user, captain=True)
+
+            # Pass a success message into homepage's context
+            request.session['success'] = True
+            request.session['message'] = f'Group {new_group.name} edited successfully' if group_id else f'Group {new_group.name} created successfully'
+            return redirect('/')
+
+    # Sending other methods to this view will receive an 400
+    return JsonResponse({'status': 400, 'message': "This page doesn't support this method"})
