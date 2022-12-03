@@ -2,16 +2,10 @@
 {% block title %}Dashboard{% endblock %}
 {% block content %}
 
-<!-- Form to create a new game -->
-{% include 'soccer/components/form/game.html' %}
-
 <!-- Form to edit each game -->
 {% for game in your_games %}
 {% include 'soccer/components/form/game.html' %}
 {% endfor %}
-
-<!-- Form to create a new team -->
-{% include 'soccer/components/form/group.html' %}
 
 <!-- Confirmation model for deleting games -->
 {% for game in your_games %}
@@ -31,7 +25,7 @@
         </div>
       </div>
     </div>
-  </div>
+</div>
 {% endfor %}
 
 
@@ -57,11 +51,12 @@
     </button>
     {% endcomment %}
 
+    <!-- Actions menu bar -->
     {% include 'soccer/components/menu/actions.html' %}
     
     <!-- Display of games -->
     <div class="game-containers mt-5">
-        <h1>Your games</h1>
+        <h1>Games organized by you</h1>
         {% for game in your_games %}
         {% include 'soccer/components/container/game.html' %}
         {% endfor %}
