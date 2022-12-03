@@ -2,7 +2,7 @@
 from django.views.generic import TemplateView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-from .models import Game, User
+from .models import Game, User, TeamAdmin, Team
 
 # Dashboard: Allows users to manage their games and teams
 class Dashboard(TemplateView):
@@ -13,12 +13,22 @@ class Dashboard(TemplateView):
         
         # Get current user information
         user_id = int(self.request.session.get('user_id', -1))
+        user = User.objects.get(id=user_id)
         
         # Get all games that this user is an organizer
         context['your_games'] = []
         for game in Game.objects.all():
             if len(game.organizers.filter(id=user_id)) > 0:
                 context['your_games'].append(game)
+
+        # Get all groups that this user is an admin
+        context['your_groups_as_captain'] = []
+        context['your_groups_as_cocaptain'] = []
+        for team_admin in user.teamadmin_set.all():
+            if team_admin.captain:
+                context['your_groups_as_captain'].append(team_admin.team)
+            else:
+                context['your_groups_as_cocaptain'].append(team_admin.team)
 
         # Display success or error message if any
         context['success'] = self.request.session.get('success', None)
