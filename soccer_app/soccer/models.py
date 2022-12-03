@@ -17,6 +17,13 @@ class User(models.Model):
     def __str__(self):
         return self.name
 
+    # Get all teams that are managed by this user
+    def get_managed_teams(self):
+        teams = []
+        for teamadmin in self.teamadmin_set.all():
+            teams.append(teamadmin.team)
+        return teams
+
 # Teams:
 # - There is a captain and co-captains in a team. These people can create/modify games for this team. They can also build teams.
 # - Team members can join games without having to request the captain or co-captains. They can choose to join a team, which can be changed later
@@ -42,12 +49,12 @@ class Team(models.Model):
         return self.teamadmin_set.get(captain=True)
 
     # Returns a string that contains all co-captains' names separated by a comma
-    def get_cocaptains(self):
+    def get_cocaptains_str(self):
         cocaptains = self.teamadmin_set.filter(captain=False)
         cocaptains_str = ''
         for cocaptain in cocaptains:
             cocaptains_str += f'{cocaptain.name}, '
-        return cocaptains_str[:-2] if cocaptains_str != '' else cocaptains_str
+        return cocaptains_str[:-2] if cocaptains_str != '' else 'None'
 
 # Team admins are captains or co-captains of teams
 class TeamAdmin(models.Model):
@@ -80,7 +87,7 @@ class Game(models.Model):
 
     class Meta:
         db_table = 'soccer_team_game'
-        ordering = ['-date']
+        ordering = ['date']
 
     def __str__(self):
         return self.name
