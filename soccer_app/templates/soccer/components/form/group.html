@@ -1,0 +1,37 @@
+<!-- Modal to create a new game -->
+<div class="modal fade" id="createGroupFormModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Create a group</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="fst-italic">Group is a soccer community who usually play with each others. Every game created for groups are visible to group members and group members can join games without having to request the captain or co-captains</div>
+                <form class="mt-3" action="/create_group" method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Name:</label>
+                        <input type="text" name="name" class="form-control" placeholder="Group name" required maxlength="50">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Max number of members:</label>
+                        <input type="number" name="max_member_num" class="form-control" placeholder="The group can't have more than this number of members">
+                        <div class="form-text">Leave this field blank or set to -1 to not limit number of members</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Description:</label>
+                        <textarea name="description" class="form-control" rows="4" maxlength="300" placeholder="Talk a bit about the group so people understand more about the it"></textarea>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">{% if game %}Confirm{% else %}Create{% endif %}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
