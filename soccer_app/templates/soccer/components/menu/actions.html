@@ -11,11 +11,11 @@
     <div class="offcanvas-body">
       <div class="menu-bar-item" data-bs-toggle="modal" data-bs-target="#createGameFormModal">Create game</div>
       <div class="menu-bar-item" data-bs-toggle="modal" data-bs-target="#createGroupFormModal">Create group</div>
-      <a style="text-decoration: none;" class="text-dark" href="#games">
-        <div class="menu-bar-item">View your games</div>
+      <a style="text-decoration: none;" class="text-dark" href="{% if request.path == '' %}#games{% else %}/#games{% endif %}">
+        <div class="menu-bar-item">View games organized by you</div>
       </a>
-      <a style="text-decoration: none;" class="text-dark" href="#groups">
-        <div class="menu-bar-item">View your groups</div>
+      <a style="text-decoration: none;" class="text-dark" href="{% if request.path == '' %}#groups{% else %}/#groups{% endif %}">
+        <div class="menu-bar-item">View your groups managed by you</div>
       </a>
     </div>
   </div>
