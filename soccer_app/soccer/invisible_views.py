@@ -21,6 +21,7 @@ def modify_game(request, **kwargs):
         
         if form.is_valid():
             game_data = form.cleaned_data
+            print('Group: ' + game_data['team'])
             
             new_game = None
             old_team_num = 0
@@ -37,6 +38,9 @@ def modify_game(request, **kwargs):
             new_game.team_num = game_data['team_num']
             new_game.visible_to_everyone = game_data['visible_to_everyone']
             new_game.description = game_data['description']
+
+            if game_data['team'] != 'none':
+                new_game.team = Team.objects.get(id=int(game_data['team']))
             new_game.save()
 
             # Add the current user as the game's organizer
@@ -98,7 +102,7 @@ def join_game(request, game_id):
 
     # Player can't join a full game
     if game.total_players >= game.max_player_num:
-        return JsonResponse({'status': 403, 'message': "Can't join game. Game is full"})
+        return JsonResponse({'status': 400, 'message': "Can't join game. Game is full"})
 
     game.gameteam_set.get(team_number=0).players.add(user)
     
