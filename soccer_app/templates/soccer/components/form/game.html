@@ -14,7 +14,18 @@
                         <input type="text" name="name" {% if game %}value="{{ game.name }}"{% endif %} class="form-control" placeholder="Short name for people to recognize your game" required maxlength="50">
                     </div>
 
-                    <input type="hidden" name="team" {% if game.team %}value="{{ game.team }}"{% endif %}>
+                    {% comment %}<input type="hidden" name="team" {% if game.team %}value="{{ game.team }}"{% endif %}>{% endcomment %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Group:</label>
+                        <select name="team" {% if game.team %}value="{{ game.team.id }}"{% endif %} class="form-control" placeholder="Group that this game is created for">
+                            <option value="none">None</option>
+                            {% for team in user.get_managed_teams %}
+                            <option value="{{team.id}}" {% if team.id == group.id %}selected{% endif %}>{{team.name}}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">Only group members can see this game, unless you set the game to be <strong>visible to everyone</strong></div>
+                    </div>
 
                     <div class="mb-3">
                         <label class="form-label">Date:</label>
