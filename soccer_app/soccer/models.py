@@ -37,6 +37,18 @@ class Team(models.Model):
     def __str__(self):
         return self.name
 
+    # Returns the captain of a group
+    def get_captain(self):
+        return self.teamadmin_set.get(captain=True)
+
+    # Returns a string that contains all co-captains' names separated by a comma
+    def get_cocaptains(self):
+        cocaptains = self.teamadmin_set.filter(captain=False)
+        cocaptains_str = ''
+        for cocaptain in cocaptains:
+            cocaptains_str += f'{cocaptain.name}, '
+        return cocaptains_str[:-2] if cocaptains_str != '' else cocaptains_str
+
 # Team admins are captains or co-captains of teams
 class TeamAdmin(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE, null=False, blank=False)
