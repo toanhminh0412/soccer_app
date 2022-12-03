@@ -54,6 +54,16 @@
             {% if user_id %}<div class="d-none d-lg-block ms-auto me-3 text-white">Hello <strong>{{name}}</strong></div>{% endif %}
         </div>
     </nav>
+
+    <!-- Form to create a new game -->
+    {% include 'soccer/components/form/game.html' %}
+
+    <!-- Form to create a new team -->
+    {% include 'soccer/components/form/group.html' %}
+
+    <!-- Actions menu bar -->
+    {% include 'soccer/components/menu/actions.html' %}
+
     {% block content %}{% endblock %}
     {% block script %}{% endblock %}
 </body>
