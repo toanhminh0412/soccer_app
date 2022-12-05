@@ -144,22 +144,52 @@ def modify_group(request, **kwargs):
         if form.is_valid():
             group_data = form.cleaned_data
             
+            new_group = None
+            # Edit an existing group
+            if group_id:
+                new_group = Team.objects.get(id=group_id)
             # Create a new group
-            new_group = Team()
+            else:
+                new_group = Team()
+
             new_group.name = group_data['name']
             if group_data['max_member_num'] is not None or group_data['max_member_num'] != -1:
                 new_group.max_member_num = group_data['max_member_num']
             new_group.description = group_data['description']
             new_group.save()
-            new_group.members.add(current_user)
 
-            # Make the creator captain of group
-            TeamAdmin.objects.create(team=new_group, user=current_user, captain=True)
+            if not group_id:
+                new_group.members.add(current_user)
+
+                # Make the creator captain of group
+                TeamAdmin.objects.create(team=new_group, user=current_user, captain=True)
 
             # Pass a success message into homepage's context
             request.session['success'] = True
             request.session['message'] = f'Group {new_group.name} edited successfully' if group_id else f'Group {new_group.name} created successfully'
-            return redirect('/')
+            return redirect('/#groups')
 
     # Sending other methods to this view will receive an 400
     return JsonResponse({'status': 400, 'message': "This page doesn't support this method"})
+
+# Delete a group
+def delete_group(request, group_id):
+    try:
+        group = Team.objects.get(id=group_id)
+    except Team.DoesNotExist:
+        return JsonResponse({'status': 404, 'message': 'Group not found'})
+    
+    # Get current user
+    current_user = User.objects.get(id=request.session['user_id'])
+    
+    # Non-captain (co-captains included) users can't delete group
+    if len(TeamAdmin.objects.filter(team=group, user=current_user, captain=True)) == 0:
+        return redirect('/#groups')
+
+     # Delete the group. Display success message
+    name = group.name
+    group.delete()
+    request.session['success'] = True
+    request.session['message'] = f'Group {name} deleted successfully'
+
+    return redirect('/#groups')
