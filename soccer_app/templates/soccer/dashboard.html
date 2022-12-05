@@ -7,6 +7,15 @@
 {% include 'soccer/components/form/game.html' %}
 {% endfor %}
 
+<!-- Form to edit each group -->
+{% for group in your_groups_as_captain %}
+{% include 'soccer/components/form/group.html' %}
+{% endfor %}
+
+{% for group in your_groups_as_cocaptain %}
+{% include 'soccer/components/form/group.html' %}
+{% endfor %}
+
 <!-- Confirmation model for deleting games -->
 {% for game in your_games %}
 <div class="modal fade" id="deleteGame{{ game.id }}ConfirmationModal" tabindex="-1" aria-hidden="true">
@@ -22,6 +31,27 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           <a href="/delete_game/{{ game.id }}" type="button" class="btn btn-danger">Delete</a>
+        </div>
+      </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Confirmation model for deleting groups -->
+{% for group in your_groups_as_captain %}
+<div class="modal fade" id="deleteGroup{{ group.id }}ConfirmationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">Delete group {{ group.name }}</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+        Are you sure you want to delete group <strong>{{ group.name }}</strong>?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <a href="/delete_group/{{ group.id }}" type="button" class="btn btn-danger">Delete</a>
         </div>
       </div>
     </div>
