@@ -6,7 +6,7 @@ const renderByHash = () => {
     const gameContainers = $('.game-containers');
     const groupContainersAsCaptain = $('.group-as-captain-containers');
     const groupContainersAsCoCaptain = $('.group-as-cocaptain-containers');
-    if (hash === '#games') {
+    if (hash !== '#groups') {
         gameContainers.removeClass('d-none');
         groupContainersAsCaptain.addClass('d-none');
         groupContainersAsCoCaptain.addClass('d-none');
