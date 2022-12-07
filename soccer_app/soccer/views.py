@@ -50,7 +50,7 @@ class GameDetailView(DetailView):
     model = Game
     template_name = "soccer/game_detail.html"
     pk_url_kwarg = "game_id"
-    context_object_name = "game"
+    context_object_name = "game_detail"
 
 # GroupsView that shows all the currently active groups
 class GroupsView(ListView):
@@ -63,4 +63,4 @@ class GroupDetailView(DetailView):
     model = Team
     template_name = "soccer/group_detail.html"
     pk_url_kwarg = "group_id"
-    context_object_name = "group"
+    context_object_name = "group_detail"
