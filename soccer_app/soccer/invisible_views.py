@@ -1,10 +1,10 @@
 from django.http import JsonResponse
 from django.shortcuts import redirect
-from .forms import GameForm, TeamForm
+from .forms import GameForm, TeamForm, GameTeamForm
 from .models import User, Game, GameTeam, Team, TeamAdmin
 
-# With no argument: Create a new game
-# With argument <game_id>: Edit game with id <game_id>
+# Admin View: With no argument - Create a new game
+# Admin View: With argument <game_id> - Edit game with id <game_id>
 def modify_game(request, **kwargs):
     if request.method == "POST":
         game_id = kwargs.get('game_id', None)
@@ -88,7 +88,7 @@ def modify_game(request, **kwargs):
     return JsonResponse({'status': 400, 'message': "This page doesn't support this method"})
 
 
-# Player joins a game.
+# Normal View: Player joins a game.
 def join_game(request, game_id):
     user_id = request.session.get('user_id', None)
     user = User.objects.get(id=user_id)
@@ -108,7 +108,7 @@ def join_game(request, game_id):
     
     return redirect(f'/game/{game_id}/')
 
-# Delete a game
+# Admin View: Delete a game
 def delete_game(request, game_id):
     # Get current user
     current_user = User.objects.get(id=request.session['user_id'])
@@ -130,6 +130,67 @@ def delete_game(request, game_id):
     request.session['message'] = f'Game {name} deleted successfully'
 
     return redirect('/')
+
+# Admin View:
+def update_players(request, game_id):
+    if request.method == "POST":
+        # Get current user
+        current_user = User.objects.get(id=request.session['user_id'])
+        game = None
+        try:
+            game = Game.objects.get(id=game_id)
+        except Game.DoesNotExist:
+            # Display 404 if game not found
+            return JsonResponse({'status': 404, 'message': 'Game not found'})
+
+        # If user isn't an organizer of the game, redirect to dashboard
+        if not game.is_organizer(current_user):
+            return redirect('/')
+        
+        form = GameTeamForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            team_number = data['team_number']
+            if 'players' in data:
+                player_names = data['players'].split(',')
+            else:
+                player_names = ''
+
+            team = game.gameteam_set.filter(team_number=team_number)
+            if len(team) == 0:
+                return JsonResponse({'status': 404, 'message': 'Team not found'})
+            
+            team = team[0]
+            bench = game.get_bench()
+            # Remove the players from bench
+            for player in bench.players.all():
+                if player.name in player_names:
+                    bench.players.remove(player)
+
+            # Add players to the team
+            current_team_players = list(team.players.all())
+            team.players.clear()
+            for name in player_names:
+                if name != '':
+                    player = User.objects.get(name=name)
+                    team.players.add(player)
+
+            team_players = team.players.all()
+            # Add removed players from team to bench
+            for player in current_team_players:
+                if player not in team_players:
+                    bench.players.add(player)
+
+            request.session['success'] = True
+            request.session['message'] = f'Update players for team {team_number} successfully'
+            return redirect(f'/game/{game_id}')
+        else:
+            request.session['success'] = False
+            request.session['message'] = 'Failed to update players for team'
+            return redirect(f'/game/{game_id}')
+
+    return JsonResponse({'status': 400, 'message': 'This method is not supported'})
+
 
 # Create a group
 def modify_group(request, **kwargs):

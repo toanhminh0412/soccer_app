@@ -172,3 +172,10 @@ class GameTeam(models.Model):
                 return "bg-teal-200"
             case _:
                 return "bg-light"
+
+    # Return all players name in a string, separated by a comma
+    def get_player_names(self):
+        names = ''
+        for player in self.players.all():
+            names += player.name + ','
+        return names

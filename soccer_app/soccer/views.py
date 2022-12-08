@@ -52,6 +52,17 @@ class GameDetailView(DetailView):
     pk_url_kwarg = "game_id"
     context_object_name = "game_detail"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Display success or error message if any
+        context['success'] = self.request.session.get('success', None)
+        context['message'] = self.request.session.get('message', None)
+        if context['success'] is not None:
+            del self.request.session['success']
+            del self.request.session['message']
+
+        return context
+
 # GroupsView that shows all the currently active groups
 class GroupsView(ListView):
     model = Team

@@ -17,6 +17,7 @@ urlpatterns = [
     path('edit_game/<int:game_id>', invisible_views.modify_game, name='edit_game'),
     path('join_game/<int:game_id>', invisible_views.join_game, name='join_game'),
     path('delete_game/<int:game_id>', invisible_views.delete_game, name='delete_game'),
+    path('update_players/<int:game_id>', invisible_views.update_players, name='update_players'),
 
     path('create_group', invisible_views.modify_group, name='create_group'),
     path('edit_group/<int:group_id>', invisible_views.modify_group, name='edit_group'),

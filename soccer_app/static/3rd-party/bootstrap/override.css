@@ -1,3 +1,4 @@
+/*** Navigation bar ***/
 .navbar {
     position: fixed;
     top:0;
@@ -13,4 +14,9 @@
 .nav-link.active,
 .nav-link:hover {
     font-weight: 400;
+}
+
+/*** Buttons ***/
+.btn-outline-primary.border-blue-200.text-blue-200:hover {
+    
 }

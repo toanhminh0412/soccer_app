@@ -2,7 +2,63 @@
 {% load soccer_extras %}
 {% block title %}{{ game_detail.name }}{% endblock %}
 {% block content %}
+<!-- Modal for editing players in teams -->
+{% for team in game_detail.get_teams %}
+<div class="team-builder-modal modal fade" id="teamBuilderModal{{ team.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">Edit team {{ team.team_number }}</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <h5>Bench</h5>
+            <div class="fs-6 fst-italic fw-light">Click on a player to put them into the team</div>
+            <div class="bench-player-container row mt-2">
+                {% for player in game_detail.get_bench.players.all %}
+                <div class="bench-player tag-container w-fit bg-light text-center mt-1">{{ player.name }}</div>
+                {% endfor %}
+            </div>
+            <h5 class="mt-3">Team players</h5>
+            <div class="fs-6 fst-italic fw-light">Click 'X' next to a player's name to remove the player from the team</div>
+            <div class="team-player-container mt-2" team-color="{{ team.get_color }}">
+                {% if team.players.count == 0 %}
+                <div class="empty-team-text mt-1 text-center">No player</div>
+                {% else %}
+                {% for player in team.players.all %}
+                <div class="team-player tag-container {{ team.get_color }} text-center mt-1 position-relative">{{ player.name }}<span class="position-absolute end-3"><button type="button" class="remove-team-player-btn btn-close" aria-label="Close"></button></span></div>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <form action="/update_players/{{ game_detail.id }}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="team_number" value="{{ team.team_number }}">
+            <input type="hidden" name="players" class="player-names-input" value="{{ team.get_player_names }}">
+            <button type="submit" class="btn btn-primary">Save changes</button>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>
+{% endfor %}
+
 <div class="container mt-150">
+    <!-- Game create status message -->
+    {% if message %}
+    {% if success %}
+    <div class="alert alert-success" role="alert">
+        {{message}}
+    </div>
+    {% else %}
+    <div class="alert alert-danger" role="alert">
+        {{message}}
+    </div>
+    {% endif %}
+    {% endif %}
+
     <div class="box-container">
         <h2 class="text-underline">{{ game_detail.name }}</h1>
         <h4 class="text-muted">{{ game_detail.location }}</h4>
@@ -31,7 +87,7 @@
                 <div class="row">
                     {% for team in game_detail.get_teams %}
                     <div class="col-6 col-lg-{{team.get_team_num_on_a_row_lg}} mt-1">
-                        <h5>Team {{team.team_number}}</h5>
+                        <h5>Team {{ team.team_number }}<span><button type="button" class="ms-3 btn btn-sm btn-outline-primary border-blue-200 text-blue-200" data-bs-toggle="modal" data-bs-target="#teamBuilderModal{{ team.id }}">Edit players</button></span></h5>
                         {% for player in team.players.all %}
                         <div class="tag-container {{team.get_color}} text-center mt-1">{{player.name}}</div>
                         {% endfor %}
@@ -42,4 +98,68 @@
         </div>
     </div>
 </div>
+<script>
+    const addPlayerToTeam = el => {
+        // Get player name, remove bench player
+        const playerName = el.text();
+        const teamBuilderModal = el.closest('.team-builder-modal');
+        const teamPlayerContainer = teamBuilderModal.find('.team-player-container');
+        el.remove();
+        
+        // Remove 'No player found' text if there is one
+        const emptyTeamText = teamPlayerContainer.children('.empty-team-text');
+        if (emptyTeamText.length !== 0) {
+            emptyTeamText.remove();
+        }
+
+        // Add player to the team
+        const teamColor = teamPlayerContainer.attr('team-color');
+        teamPlayerContainer.append(`<div class="team-player tag-container ${teamColor} text-center mt-1">${playerName}<span class="position-absolute end-3"><button type="button" class="remove-team-player-btn btn-close" aria-label="Close"></button></span></div>`);
+        teamPlayerContainer.find('.team-player:last-child .remove-team-player-btn').click(function () {
+            removePlayerFromTeam($(this));
+        })
+
+        // Add player to input field value to send to backend
+        const playerNamesInput = teamBuilderModal.find('.player-names-input');
+        playerNamesInput.val(`${playerNamesInput.val()},${playerName}`);
+    }
+
+    const removePlayerFromTeam = el => {
+        // Remove the player from the team
+        const teamPlayer = el.parent().parent();
+        const playerName = teamPlayer.text();
+        teamPlayerContainer = teamPlayer.closest('.team-player-container');
+        teamPlayer.remove();
+
+        // Remove the name from the player names input field
+        const teamBuilderModal = teamPlayerContainer.closest('.team-builder-modal');
+        const playerNamesInput = teamBuilderModal.find('.player-names-input');
+        let playerNamesValueArr = playerNamesInput.val().split(',');
+        const playerNameIndex = playerNamesValueArr.indexOf(playerName);
+        playerNamesValueArr.splice(playerNameIndex, 1);
+        playerNamesInput.val(playerNamesValueArr.join(','));
+        
+        // Add a 'No player' text if there is no player left in the team
+        if (teamPlayerContainer.find('.team-player').length === 0) {
+            teamPlayerContainer.append(`<div class="empty-team-text mt-1 text-center">No player</div>`)
+        }
+
+        // Add player to the bench
+        const benchPlayerContainer = teamBuilderModal.find('.bench-player-container');
+        benchPlayerContainer.append(`<div class="bench-player tag-container w-fit bg-light text-center mt-1">${playerName}</div>`);
+        benchPlayerContainer.children('.bench-player:last-child').click(function() {
+            addPlayerToTeam($(this));
+        })
+    }
+
+    // Move a player from bench to team when clicking on that player
+    $('.team-builder-modal .bench-player').click(function() {
+        addPlayerToTeam($(this));
+    })
+
+    // Click on the 'X' button in a player's container removes the player from the team and put the player on the bench
+    $('.team-builder-modal .remove-team-player-btn').click(function () {
+        removePlayerFromTeam($(this));
+    })
+</script>
 {% endblock %}
