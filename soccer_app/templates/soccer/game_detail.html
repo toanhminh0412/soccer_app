@@ -87,7 +87,7 @@
                 <div class="row">
                     {% for team in game_detail.get_teams %}
                     <div class="col-6 col-lg-{{team.get_team_num_on_a_row_lg}} mt-1">
-                        <h5>Team {{ team.team_number }}<span><button type="button" class="ms-3 btn btn-sm btn-outline-primary border-blue-200 text-blue-200" data-bs-toggle="modal" data-bs-target="#teamBuilderModal{{ team.id }}">Edit players</button></span></h5>
+                        <h5>Team {{ team.team_number }}{% if user in game_detail.organizers.all %}<span><button type="button" class="ms-3 btn btn-sm btn-outline-primary border-blue-200 text-blue-200" data-bs-toggle="modal" data-bs-target="#teamBuilderModal{{ team.id }}">Edit players</button></span>{% endif %}</h5>
                         {% for player in team.players.all %}
                         <div class="tag-container {{team.get_color}} text-center mt-1">{{player.name}}</div>
                         {% endfor %}
