@@ -12,24 +12,40 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import os
+import json
+import environ
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Enable the line below if need to specify the path of .env file
+environ.Env.read_env()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-8e(6w*cjv)vvnqm)eqm7k!=_z%a17=#rvf^%i1u&&lxk@#-@-!'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-8e(6w*cjv)vvnqm)eqm7k!=_z%a17=#rvf^%i1u&&lxk@#-@-!')
+
+# Temporarily disable Cross Origin Opener Policy
+SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') != 'False'
 
-ALLOWED_HOSTS = []
-
+# SECURITY WARNING: This attribute allows the hosts listed to host the django project.
+# In production, only allow hosts that you want to host your project.
+# In development, default already includes "locahost" and "127.0.0.1"
+ALLOWED_HOSTS = json.loads(os.environ.get('ALLOWED_HOSTS'))
+ALLOWED_HOSTS = json.loads(os.environ.get('ALLOWED_HOSTS'))\
+    if os.environ.get('ALLOWED_HOSTS') else ['*']
 
 # Application definition
+# Make addresses trusted by crsf token
+CSRF_TRUSTED_ORIGINS = json.loads(os.environ.get('TRUSTED_ORIGINS'))\
+    if os.environ.get('TRUSTED_ORIGINS') else ['http://localhost']
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -43,6 +59,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -118,12 +135,22 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
-STATIC_URL = 'static/'
+# Project looks for static file under "static" folder from the root directory
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static/"),
 ]
+
+# Automatic compression and caching for static files
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Configure Django App for Heroku.
+import django_heroku
+django_heroku.settings(locals())
