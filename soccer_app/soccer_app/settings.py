@@ -37,8 +37,7 @@ DEBUG = os.environ.get('DEBUG', 'True') != 'False'
 # SECURITY WARNING: This attribute allows the hosts listed to host the django project.
 # In production, only allow hosts that you want to host your project.
 # In development, default already includes "locahost" and "127.0.0.1"
-ALLOWED_HOSTS = json.loads(os.environ.get('ALLOWED_HOSTS'))
-ALLOWED_HOSTS = json.loads(os.environ.get('ALLOWED_HOSTS'))\
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS').split(',')\
     if os.environ.get('ALLOWED_HOSTS') else ['*']
 
 # Application definition
