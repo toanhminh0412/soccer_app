@@ -1,4 +1,5 @@
 TODO:
+- Only admins can edit their games
 - Add username to users
 - Request to join group
 - Make the login page redirect to the destination

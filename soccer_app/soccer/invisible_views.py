@@ -101,12 +101,12 @@ def join_game(request, game_id):
         return JsonResponse({'status': 404, 'message': 'Game not found'})
 
     # Player can't join a full game
-    if game.total_players >= game.max_player_num:
+    if game.total_players() >= game.max_player_num:
         return JsonResponse({'status': 400, 'message': "Can't join game. Game is full"})
 
     game.gameteam_set.get(team_number=0).players.add(user)
     
-    return redirect(f'/game/{game_id}/')
+    return redirect(f'/game/{game_id}')
 
 # Admin View: Delete a game
 def delete_game(request, game_id):

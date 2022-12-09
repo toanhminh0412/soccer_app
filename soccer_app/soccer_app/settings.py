@@ -45,6 +45,9 @@ ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS').split(',')\
 CSRF_TRUSTED_ORIGINS = json.loads(os.environ.get('TRUSTED_ORIGINS'))\
     if os.environ.get('TRUSTED_ORIGINS') else ['http://localhost']
 
+# Prevent Django from automatically adding a slash at the end of urls
+APPEND_SLASH = False
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
