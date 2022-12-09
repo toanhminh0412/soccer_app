@@ -1,1 +1,1 @@
-web: gunicorn -w 4 soccer_app.soccer_app.wsgi:application --bind 0.0.0.0:4001
+web: cd soccer_app && gunicorn -w 4 soccer_app.wsgi:application --bind 0.0.0.0:4001
