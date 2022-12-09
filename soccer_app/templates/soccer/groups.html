@@ -4,12 +4,12 @@
 <div class="container mt-150">
     <label class="fs-5 me-2 mt-5">View:</label>
     <select class="custom-select-tag mt-5">
-        <option value="yours" selected>Your groups</option>
-        <option value="all">Browse groups</option>
+        <option value="all" selected>All groups</option>
+        <option value="yours">Your groups</option>
     </select>
 
     <!-- Display of all groups -->
-    <div class="mt-5 all-groups-container d-none">
+    <div class="mt-5 all-groups-container">
         {% for group in all_groups %}
         <!-- Only render groups that still have spaces -->
         {% if group.max_member_num %}
@@ -23,7 +23,7 @@
     </div>
 
     <!-- Display of your groups -->
-    <div class="mt-5 your-groups-container">
+    <div class="mt-5 your-groups-container d-none">
         {% for group in all_groups %}
         {% if user in group.members.all %}
         {% include 'soccer/components/container/group.html' %}

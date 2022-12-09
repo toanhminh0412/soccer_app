@@ -1,6 +1,8 @@
+{% if request.path != '/login/' %}
 <a class="btn btn-success" id="menu-btn" data-bs-toggle="offcanvas" href="#menu-bar" role="button">
     Menu
 </a>
+{% endif %}
 
   
   <div class="offcanvas offcanvas-start" id="menu-bar" tabindex="-1">
