@@ -3,9 +3,10 @@ from django.views.generic import TemplateView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from .models import Game, User, TeamAdmin, Team
+from .mixins import MessageViewMixin
 
 # Dashboard: Allows users to manage their games and teams
-class Dashboard(TemplateView):
+class Dashboard(MessageViewMixin, TemplateView):
     template_name = 'soccer/dashboard.html'
 
     def get_context_data(self, **kwargs):
@@ -30,13 +31,6 @@ class Dashboard(TemplateView):
             else:
                 context['your_groups_as_cocaptain'].append(team_admin.team)
 
-        # Display success or error message if any
-        context['success'] = self.request.session.get('success', None)
-        context['message'] = self.request.session.get('message', None)
-        if context['success'] is not None:
-            del self.request.session['success']
-            del self.request.session['message']
-
         return context
 
 # GamesView that shows all the currently active game
@@ -46,25 +40,14 @@ class GamesView(ListView):
     context_object_name = "all_games"
 
 # A game detail page
-class GameDetailView(DetailView):
+class GameDetailView(MessageViewMixin, DetailView):
     model = Game
     template_name = "soccer/game_detail.html"
     pk_url_kwarg = "game_id"
     context_object_name = "game_detail"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # Display success or error message if any
-        context['success'] = self.request.session.get('success', None)
-        context['message'] = self.request.session.get('message', None)
-        if context['success'] is not None:
-            del self.request.session['success']
-            del self.request.session['message']
-
-        return context
-
 # GroupsView that shows all the currently active groups
-class GroupsView(ListView):
+class GroupsView(MessageViewMixin, ListView):
     model = Team
     template_name = "soccer/groups.html"
     context_object_name = "all_groups"

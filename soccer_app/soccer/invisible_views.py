@@ -1,7 +1,14 @@
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from .forms import GameForm, TeamForm, GameTeamForm
-from .models import User, Game, GameTeam, Team, TeamAdmin
+from .models import User, Game, GameTeam, Team, TeamAdmin, Request
+
+###################################
+######### Helper functions ########
+###################################
+# Get current user
+def get_user(request):
+    return User.objects.get(id=int(request.session['user_id']))
 
 # Admin View: With no argument - Create a new game
 # Admin View: With argument <game_id> - Edit game with id <game_id>
@@ -10,7 +17,7 @@ def modify_game(request, **kwargs):
         game_id = kwargs.get('game_id', None)
 
         # Get current user, which will be set to be the game organizer
-        current_user = User.objects.get(id=request.session['user_id'])
+        current_user = get_user(request)
         if game_id:
             game = Game.objects.get(id=game_id)
             # If user isn't an organizer of the game, redirect to dashboard
@@ -79,7 +86,8 @@ def modify_game(request, **kwargs):
             return redirect('/')
         
         # Pass a failure message into homepage's context
-        game = Game.objects.get(id=game_id)
+        if game_id:
+            game = Game.objects.get(id=game_id)
         request.session['success'] = False
         request.session['message'] = f'Failed to edit game {game.name}' if game_id else 'Failed to create game'
         return redirect('/')
@@ -90,8 +98,7 @@ def modify_game(request, **kwargs):
 
 # Normal View: Player joins a game.
 def join_game(request, game_id):
-    user_id = request.session.get('user_id', None)
-    user = User.objects.get(id=user_id)
+    user = get_user(request)
 
     # Player is put on bench when first join a game
     game = None
@@ -104,14 +111,21 @@ def join_game(request, game_id):
     if game.total_players() >= game.max_player_num:
         return JsonResponse({'status': 400, 'message': "Can't join game. Game is full"})
 
+    # Return 400 if the player is already in the game
+    if user in game.get_players():
+        return JsonResponse({'status': 400, 'message': "You are already in this game"})
+
     game.gameteam_set.get(team_number=0).players.add(user)
     
+    request.session['success'] = True
+    request.session['message'] = f'Joined game {game.name} successfully'
+
     return redirect(f'/game/{game_id}')
 
 # Admin View: Delete a game
 def delete_game(request, game_id):
     # Get current user
-    current_user = User.objects.get(id=request.session['user_id'])
+    current_user = get_user(request)
     game = None
     try:
         game = Game.objects.get(id=game_id)
@@ -135,7 +149,7 @@ def delete_game(request, game_id):
 def update_players(request, game_id):
     if request.method == "POST":
         # Get current user
-        current_user = User.objects.get(id=request.session['user_id'])
+        current_user = get_user(request)
         game = None
         try:
             game = Game.objects.get(id=game_id)
@@ -198,7 +212,7 @@ def modify_group(request, **kwargs):
         group_id = kwargs.get('group_id', None)
 
         # Get current user, which will be set to be the group captain
-        current_user = User.objects.get(id=request.session['user_id'])
+        current_user = get_user(request)
         
         form = TeamForm(request.POST)
 
@@ -233,6 +247,31 @@ def modify_group(request, **kwargs):
     # Sending other methods to this view will receive an 400
     return JsonResponse({'status': 400, 'message': "This page doesn't support this method"})
 
+# Send a request to the group admins to join the group
+def request_to_join_group(request, group_id):
+    try:
+        group = Team.objects.get(id=group_id)
+    except Team.DoesNotExist:
+        return JsonResponse({'status': 404, 'message': 'Group not found'})
+
+    # Get current user
+    current_user = get_user(request)
+
+    # Return 400 if the user is already in the group
+    if current_user in group.members.all():
+        return JsonResponse({'status': 400, 'message': 'You are already in this group'})
+
+    # Reutnr 400 if the user has already requested to join the group
+    if len(Request.objects.filter(user=current_user, group=group)) > 0:
+        return JsonResponse({'status': 400, 'message': 'You already requested to join this group'})
+
+    # Create a request, flash a success message and redirect to groups page
+    Request.objects.create(type='group', user=current_user, group=group)
+    request.session['success'] = True
+    request.session['message'] = f'Requested to join group {group.name}'
+
+    return redirect('/group')
+
 # Delete a group
 def delete_group(request, group_id):
     try:
@@ -241,7 +280,7 @@ def delete_group(request, group_id):
         return JsonResponse({'status': 404, 'message': 'Group not found'})
     
     # Get current user
-    current_user = User.objects.get(id=request.session['user_id'])
+    current_user = get_user(request)
     
     # Non-captain (co-captains included) users can't delete group
     if len(TeamAdmin.objects.filter(team=group, user=current_user, captain=True)) == 0:

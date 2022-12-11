@@ -10,7 +10,7 @@
                 <form {% if game %}action="/edit_game/{{ game.id }}"{% else %}action="/create_game"{% endif %} method="post">
                     {% csrf_token %}
                     <div class="mb-3">
-                        <label class="form-label">Name:</label>
+                        <label class="form-label">Name  (Required):</label>
                         <input type="text" name="name" {% if game %}value="{{ game.name }}"{% endif %} class="form-control" placeholder="Short name for people to recognize your game" required maxlength="50">
                     </div>
                     
@@ -26,13 +26,13 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Date:</label>
+                        <label class="form-label">Date (Required):</label>
                         <input type="datetime-local" name="date" {% if game %}value="{{ game.get_date_str }}"{% endif %} id="game-form-date" class="form-control" required>
                         <div class="form-text">Date time of the game</div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Location:</label>
+                        <label class="form-label">Location (Required):</label>
                         <input type="text" name="location" {% if game %}value="{{ game.location }}"{% endif %} class="form-control" placeholder="Where is this game taking place?" required maxlength="200">
                     </div>
 
@@ -55,8 +55,8 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Description:</label>
-                        <textarea name="description" class="form-control" rows="4" maxlength="300" placeholder="Talk a bit about the game (rules, game level, fees,...)">{% if game %}{{ game.description }}{% endif %}</textarea>
+                        <label class="form-label">Description (Required):</label>
+                        <textarea name="description" class="form-control" rows="4" maxlength="300" placeholder="Talk a bit about the game (rules, game level, fees,...)" required>{% if game %}{{ game.description }}{% endif %}</textarea>
                     </div>
 
                     <div class="modal-footer">

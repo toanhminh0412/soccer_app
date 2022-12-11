@@ -21,5 +21,6 @@ urlpatterns = [
 
     path('create_group', invisible_views.modify_group, name='create_group'),
     path('edit_group/<int:group_id>', invisible_views.modify_group, name='edit_group'),
+    path('request_to_join_group/<int:group_id>', invisible_views.request_to_join_group, name='request_to_join_group'),
     path('delete_group/<int:group_id>', invisible_views.delete_group, name='delete_group'),
 ]

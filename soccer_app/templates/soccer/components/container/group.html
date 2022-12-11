@@ -24,7 +24,7 @@
             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editGroup{{ group.id }}FormModal">Edit group</button>
             {% else %}
             <a href="/group/{{ group.id }}" type="button" class="btn btn-secondary btn-sm">View details</a>
-            <a href="#" type="button" class="btn btn-success btn-sm {% if user in group.members.all %}disabled{% endif %}">Request to join group</a>
+            <a href="/request_to_join_group/{{ group.id }}" type="button" class="btn btn-success btn-sm {% if user in group.members.all %}disabled{% elif user in group.get_requested_users %}disabled{% endif %}">Request to join group</a>
             {% endif %}
         </div>
     </div>

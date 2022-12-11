@@ -56,6 +56,13 @@ class Team(models.Model):
             cocaptains_str += f'{cocaptain.name}, '
         return cocaptains_str[:-2] if cocaptains_str != '' else 'None'
 
+    # Get all users that have requested to join this group
+    def get_requested_users(self):
+        users = []
+        for request in self.request_set.all():
+            users.append(request.user)
+        return users
+
 # Team admins are captains or co-captains of teams
 class TeamAdmin(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE, null=False, blank=False)
@@ -179,3 +186,13 @@ class GameTeam(models.Model):
         for player in self.players.all():
             names += player.name + ','
         return names
+
+# A request to join a game or a group
+# Request has to be accepted by an admin for a player to join a game or a group
+class Request(models.Model):
+    type = models.CharField(max_length=5, choices=[('group', 'group'), ('game', 'game')], default='group')
+    # Sender of the request
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
+    # Receiver end of the request, depending on the type
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, null=True, blank=True)
+    group = models.ForeignKey(Team, on_delete=models.CASCADE, null=True, blank=True)
