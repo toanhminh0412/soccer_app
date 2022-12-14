@@ -293,3 +293,70 @@ def delete_group(request, group_id):
     request.session['message'] = f'Group {name} deleted successfully'
 
     return redirect('/#groups')
+
+# Accept a request to join a game or group
+def accept_request(request, request_id):
+    # Return 404 if request not found
+    try:
+        join_request = Request.objects.get(id=request_id)
+    except Team.DoesNotExist:
+        return JsonResponse({'status': 404, 'message': 'Request not found'})
+
+    current_user = get_user(request)
+
+    # Request to join a group
+    if join_request.group:
+        # Non-admin group member can't accept a request
+        if len(join_request.group.teamadmin_set.filter(user=current_user)) == 0:
+            return JsonResponse({'status': 403, 'message': 'You are unauthorized to visit this url'})
+
+        # Add member to the group and delete the request
+        join_request.group.members.add(join_request.user)
+        join_request.delete()
+
+    # Request to join a game
+    if join_request.game:
+        # Non-organizer game player can't accept a request
+        if not join_request.game.is_organizer(current_user):
+            return JsonResponse({'status': 403, 'message': 'You are unauthorized to visit this url'})
+
+        # Add player to the game and delete the request
+        join_request.game.get_bench().players.add(join_request.user)
+        join_request.delete()
+
+    # Display success message and redirect to dashboard for requests
+    request.session['success'] = True
+    request.session['message'] = f'Request accepted successfully'
+
+    return redirect('/#requests')
+
+# Decline a request to join a game or group
+def decline_request(request, request_id):
+    # Return 404 if request not found
+    try:
+        join_request = Request.objects.get(id=request_id)
+    except Team.DoesNotExist:
+        return JsonResponse({'status': 404, 'message': 'Request not found'})
+
+    current_user = get_user(request)
+
+    # Request to join a group
+    if join_request.group:
+        # Non-admin group member can't decline a request
+        if len(join_request.group.teamadmin_set.filter(user=current_user)) == 0:
+            return JsonResponse({'status': 403, 'message': 'You are unauthorized to visit this url'})
+
+    # Request to join a game
+    if join_request.game:
+        # Non-organizer game player can't decline a request
+        if not join_request.game.is_organizer(current_user):
+            return JsonResponse({'status': 403, 'message': 'You are unauthorized to visit this url'})
+
+    # delete the request
+    join_request.delete()
+
+    # Display success message and redirect to dashboard for requests
+    request.session['success'] = True
+    request.session['message'] = f'Request declined successfully'
+
+    return redirect('/#requests')

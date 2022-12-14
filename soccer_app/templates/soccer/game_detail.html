@@ -46,18 +46,8 @@
 {% endfor %}
 
 <div class="container mt-150">
-    <!-- Game create status message -->
-    {% if message %}
-    {% if success %}
-    <div class="alert alert-success" role="alert">
-        {{message}}
-    </div>
-    {% else %}
-    <div class="alert alert-danger" role="alert">
-        {{message}}
-    </div>
-    {% endif %}
-    {% endif %}
+    <!-- Team edit status message -->
+    {% include 'soccer/components/message/status_message.html' %}
 
     <div class="box-container">
         <h2 class="text-underline">{{ game_detail.name }}</h1>

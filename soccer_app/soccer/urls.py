@@ -23,4 +23,7 @@ urlpatterns = [
     path('edit_group/<int:group_id>', invisible_views.modify_group, name='edit_group'),
     path('request_to_join_group/<int:group_id>', invisible_views.request_to_join_group, name='request_to_join_group'),
     path('delete_group/<int:group_id>', invisible_views.delete_group, name='delete_group'),
+
+    path('accept_request/<int:request_id>', invisible_views.accept_request, name='accept_request'),
+    path('decline_request/<int:request_id>', invisible_views.decline_request, name='decline_request')
 ]

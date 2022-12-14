@@ -79,6 +79,20 @@ body {
     z-index: 30;
 }
 
+.text-btn {
+    color: rgb(148 163 184);
+    transition-duration: 0.25s;
+    width: fit-content;
+    margin-left: 10px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.text-btn:hover,
+.text-btn:active {
+    color: #000000;
+}
+
 /*** Elements ***/
 .custom-select-tag {
     width: fit-content;

@@ -31,6 +31,15 @@ class Dashboard(MessageViewMixin, TemplateView):
             else:
                 context['your_groups_as_cocaptain'].append(team_admin.team)
 
+        # Get all requests to join groups that this user is an admin of
+        context['group_requests'] = []
+        for group in context['your_groups_as_captain']:
+            for request in group.request_set.all():
+                context['group_requests'].append(request)
+
+        for group in context['your_groups_as_cocaptain']:
+            for request in group.request_set.all():
+                context['group_requests'].append(request)
         return context
 
 # GamesView that shows all the currently active game

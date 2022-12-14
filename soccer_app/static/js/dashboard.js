@@ -6,14 +6,22 @@ const renderByHash = () => {
     const gameContainers = $('.game-containers');
     const groupContainersAsCaptain = $('.group-as-captain-containers');
     const groupContainersAsCoCaptain = $('.group-as-cocaptain-containers');
-    if (hash !== '#groups') {
+    const groupRequests = $('.group-requests');
+    if (!hash || hash === '#games') {
         gameContainers.removeClass('d-none');
         groupContainersAsCaptain.addClass('d-none');
         groupContainersAsCoCaptain.addClass('d-none');
-    } else {
+        groupRequests.addClass('d-none');
+    } else if (hash === '#groups') {
         gameContainers.addClass('d-none');
+        groupRequests.addClass('d-none');
         groupContainersAsCaptain.removeClass('d-none');
         groupContainersAsCoCaptain.removeClass('d-none');
+    } else if (hash === '#requests') {
+        gameContainers.addClass('d-none');
+        groupContainersAsCaptain.addClass('d-none');
+        groupContainersAsCoCaptain.addClass('d-none');
+        groupRequests.removeClass('d-none');
     }
 }
 

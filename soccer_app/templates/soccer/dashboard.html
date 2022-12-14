@@ -61,17 +61,7 @@
 
 <div class="container mt-150">
     <!-- Game create status message -->
-    {% if message %}
-    {% if success %}
-    <div class="alert alert-success" role="alert">
-        {{message}}
-    </div>
-    {% else %}
-    <div class="alert alert-danger" role="alert">
-        {{message}}
-    </div>
-    {% endif %}
-    {% endif %}
+    {% include 'soccer/components/message/status_message.html' %}
 
     
     <!-- Button trigger modal -->
@@ -96,6 +86,7 @@
         {% endif %}
     </div>
     
+    <!-- Display groups where user is a captain -->
     <div class="group-as-captain-containers d-none mt-5">
         <h1>Groups that you are a captain of</h1>
         {% if your_groups_as_captain|length > 0 %}
@@ -107,8 +98,7 @@
         {% endif %}
     </div>
     
-
-    
+    <!-- Display groups where user is a co-captain -->
     <div class="group-as-cocaptain-containers d-none mt-5">
         <h1>Groups that you are a co-captain of</h1>
         {% if your_groups_as_cocaptain|length > 0 %}
@@ -117,6 +107,18 @@
         {% endfor %}
         {% else %}
         <div class="mt-5 text-center fs-5">You are not a co-captain of any group</div>
+        {% endif %}
+    </div>
+
+    <!-- Display requests to join groups -->
+    <div class="group-requests d-none mt-5">
+        <h1>Pending requests</h1>
+        {% if group_requests|length == 0 %}
+        <div class="mt-5 text-center fs-5">No pending request</div>
+        {% else %}
+        {% for group_request in group_requests %}
+        {% include 'soccer/components/container/request.html' %}
+        {% endfor %}
         {% endif %}
     </div>
     
