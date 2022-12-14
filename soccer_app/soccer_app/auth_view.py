@@ -1,8 +1,9 @@
 from django.views.generic import TemplateView
 from django import forms
 from django.shortcuts import redirect
+from django.utils import timezone
 
-from soccer.models import User
+from soccer.models import User, Game
 
 # This mixin redirects a view to homepage if the user is logged in
 class LoginRedirectMixin:
@@ -60,6 +61,16 @@ class LoginView(LoginRedirectMixin, TemplateView):
             request.session['user_id'] = user.id
             request.session['phone_number'] = phone_number
             request.session['name'] = name
+
+            # Remove all games in the past
+            for game in Game.objects.all():
+                if game.date < timezone.now():
+                    print(game.date)
+                    print(timezone.now())
+                    game.delete()
+                # This is doable as games are sorted by date
+                else:
+                    break
 
             # Redirect to homepage
             return redirect('/')

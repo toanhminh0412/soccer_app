@@ -36,6 +36,16 @@
 </div>
 
 <script>
+    // Render a text if player hasn't joined any group
+    if ($('.your-groups-container .card').length == 0) {
+        $('.your-groups-container').append(`<div class="mt-5 text-center fs-5">You haven't joined any group</div>`)
+    }
+
+    // Render a text if there is no group
+    if ($('.all-groups-container .card').length == 0) {
+        $('.all-groups-container').append(`<div class="mt-5 text-center fs-5">No group found</div>`)
+    }
+
     // Toggle viewing your groups or all groups
     $('.custom-select-tag').on('change', function() {
         const value = $(this).val();
