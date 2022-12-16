@@ -4,7 +4,7 @@ from soccer.models import User
 # Get current user information
 def get_user(request):
     user_id = request.session.get('user_id', None)
-    
+
     # if user is not logged in, return None for all values
     if not user_id:
         return {

@@ -145,7 +145,7 @@ def delete_game(request, game_id):
 
     return redirect('/')
 
-# Admin View:
+# Admin View: Modify players for a team of a game
 def update_players(request, game_id):
     if request.method == "POST":
         # Get current user
@@ -159,16 +159,16 @@ def update_players(request, game_id):
 
         # If user isn't an organizer of the game, redirect to dashboard
         if not game.is_organizer(current_user):
-            return redirect('/')
+            return JsonResponse({'status': 403, 'message': 'You are not authorized to edit players for this team'})
         
         form = GameTeamForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
             team_number = data['team_number']
             if 'players' in data:
-                player_names = data['players'].split(',')
+                player_ids = data['players'].split(',')
             else:
-                player_names = ''
+                player_ids = ''
 
             team = game.gameteam_set.filter(team_number=team_number)
             if len(team) == 0:
@@ -176,17 +176,17 @@ def update_players(request, game_id):
             
             team = team[0]
             bench = game.get_bench()
-            # Remove the players from bench
+            # Remove the team assigned players from bench
             for player in bench.players.all():
-                if player.name in player_names:
+                if str(player.id) in player_ids:
                     bench.players.remove(player)
 
             # Add players to the team
             current_team_players = list(team.players.all())
             team.players.clear()
-            for name in player_names:
-                if name != '':
-                    player = User.objects.get(name=name)
+            for id in player_ids:
+                if id != '':
+                    player = User.objects.get(id=int(id))
                     team.players.add(player)
 
             team_players = team.players.all()

@@ -187,6 +187,13 @@ class GameTeam(models.Model):
             names += player.name + ','
         return names
 
+    # Return all players id in a string, separated by a comma
+    def get_player_ids(self):
+        ids = ''
+        for player in self.players.all():
+            ids += str(player.id) + ','
+        return ids
+
 # A request to join a game or a group
 # Request has to be accepted by an admin for a player to join a game or a group
 class Request(models.Model):
