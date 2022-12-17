@@ -64,6 +64,10 @@
             <div class="mt-2"><strong class="me-2">Description:</strong>{{ game_detail.description }}</div>
         </div>
         <div class="mt-3">
+            <div class="fs-6 fw-bold">Join link:</div>
+            <div class="link-container position-relative"><span class="join-link">http://{{ request.get_host }}/join_game/{{ game_detail.id }}</span><span class="position-absolute copy-link">Copy</span></div>
+        </div>
+        <div class="mt-3">
             <div>
                 <h5>Bench</h5>
                 <div class="row">
@@ -89,6 +93,15 @@
     </div>
 </div>
 <script>
+    // Copy the invite link when clicking on "copy"
+    $('.copy-link').click(function() {
+        const link = $('.join-link').text()
+        navigator.clipboard.writeText(link);
+        $(this).text('Copied');
+        $(this).css({'color': 'black'})
+    })
+    
+
     const addPlayerToTeam = el => {
         // Get player name, remove bench player
         const playerId = el.attr('player-id');

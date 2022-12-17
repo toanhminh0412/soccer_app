@@ -21,6 +21,12 @@ class AuthMiddleware():
         if not re.match(request.path, STATIC_PATH) and request.path != LOGIN_PATH \
             and request.path != LOGOUT_PATH and ADMIN_PATH not in request.path \
                 and not request.session.get('user_id', None):
+
+            # If an authenticated user clicks on a link to join game,
+            # they will be redirected to the join game url after logging in
+            if 'join_game' in request.path:
+                request.session['redirect_url'] = request.path
+
             return redirect('/login/')
 
         response = self.get_response(request)

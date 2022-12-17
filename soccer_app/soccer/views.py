@@ -62,7 +62,7 @@ class GroupsView(MessageViewMixin, ListView):
     context_object_name = "all_groups"
 
 # A group detail page
-class GroupDetailView(DetailView):
+class GroupDetailView(MessageViewMixin, DetailView):
     model = Team
     template_name = "soccer/group_detail.html"
     pk_url_kwarg = "group_id"

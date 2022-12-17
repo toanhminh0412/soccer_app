@@ -72,6 +72,12 @@ class LoginView(LoginRedirectMixin, TemplateView):
                 else:
                     break
 
+            # If an authenticated user clicks on a link to join game,
+            # they will be redirected to the join game url after logging in
+            redirect_url = request.session.get('redirect_url', None)
+            if redirect_url:
+                return redirect(redirect_url)
+
             # Redirect to homepage
             return redirect('/')
         

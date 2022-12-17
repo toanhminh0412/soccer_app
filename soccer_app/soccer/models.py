@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
 
 from pytz import timezone
+from django_random_id_model import RandomIDModel
 
 # Create your models here.
 # User model of this application
@@ -31,7 +32,7 @@ class User(models.Model):
 # - Games of a team can be set to be visible to outsiders.
 # - Outsiders must request team captain or co-captains to join the team's games.
 # - Everytime a game is created or modified, team members are notified
-class Team(models.Model):
+class Team(RandomIDModel):
     name = models.CharField(max_length=50, null=False, blank=False)
     max_member_num = models.IntegerField(null=True, blank=True)
     members = models.ManyToManyField(User)
@@ -81,7 +82,7 @@ class TeamAdmin(models.Model):
 # - Anyone can create/modify a game. This owner of a game is called the organizer. Organizer can build teams
 # - Everyone can see and join game without sending request to the organizer
 # - They can join a game team or join bench waiting to be arranged.
-class Game(models.Model):
+class Game(RandomIDModel):
     name = models.CharField(max_length=50, null=False, blank=False)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True, blank=True)
     organizers = models.ManyToManyField(User)

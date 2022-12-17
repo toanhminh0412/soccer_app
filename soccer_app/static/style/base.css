@@ -51,6 +51,12 @@ body {
     cursor: default;
 }
 
+.link-container {
+    background-color: rgb(226 232 240);
+    padding: 10px;
+    border-radius: 0.5rem;
+}
+
 /*** Forms ***/
 #login-form {
     margin-top: 150px;
@@ -69,6 +75,12 @@ body {
 /*** Text ***/
 .helper-text {
     font-size: .8em;
+}
+
+.copy-link {
+    right: 20px;
+    cursor: default;
+    color:rgb(37 99 235);
 }
 
 /*** Buttons ***/

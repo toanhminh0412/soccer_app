@@ -113,7 +113,8 @@ def join_game(request, game_id):
 
     # Return 400 if the player is already in the game
     if user in game.get_players():
-        return JsonResponse({'status': 400, 'message': "You are already in this game"})
+        # return JsonResponse({'status': 400, 'message': "You are already in this game"})
+        return redirect(f'/game/{game_id}')
 
     game.gameteam_set.get(team_number=0).players.add(user)
     
@@ -261,7 +262,7 @@ def request_to_join_group(request, group_id):
     if current_user in group.members.all():
         return JsonResponse({'status': 400, 'message': 'You are already in this group'})
 
-    # Reutnr 400 if the user has already requested to join the group
+    # Return 400 if the user has already requested to join the group
     if len(Request.objects.filter(user=current_user, group=group)) > 0:
         return JsonResponse({'status': 400, 'message': 'You already requested to join this group'})
 
@@ -271,6 +272,32 @@ def request_to_join_group(request, group_id):
     request.session['message'] = f'Requested to join group {group.name}'
 
     return redirect('/group')
+
+# Join group using an invite link
+def join_group(request, group_id):
+    try:
+        group = Team.objects.get(id=group_id)
+    except Team.DoesNotExist:
+        return JsonResponse({'status': 404, 'message': 'Group not found'})
+
+    # Get current user
+    current_user = get_user(request)
+
+    # Return 400 if the user is already in the group
+    if current_user in group.members.all():
+        return redirect(f'/group/{group_id}')
+    
+    # Delete the request to join group that this user already sent if any
+    join_request = Request.objects.filter(user=current_user, group=group)
+    if len(join_request) > 0:
+        for jr in join_request:
+            jr.delete()
+
+    group.members.add(current_user)
+    request.session['success'] = True
+    request.session['message'] = f'Joined group {group.name} successfully'
+
+    return redirect(f'/group/{group_id}')
 
 # Delete a group
 def delete_group(request, group_id):
