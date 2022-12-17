@@ -13,7 +13,9 @@
         {% for game in all_games %}
         <!-- Only render games that still have spaces -->
         {% if game.total_players < game.max_player_num %}
+        {% if game.visible_to_everyone %}
         {% include 'soccer/components/container/game.html' %}
+        {% endif %}
         {% endif %}
         {% endfor %}
     </div>
