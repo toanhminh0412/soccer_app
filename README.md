@@ -40,4 +40,17 @@ The following command line from the root directory tells Django to run on `local
     Starting development server at http://127.0.0.1:4001/
     Quit the server with CTRL-BREAK.
 
-Make a change
+## Workflow
+When working on an issue, make sure you are in **main**:
+
+    $ git pull origin main      # Update your local git to match remote git
+    $ git checkout <new_branch_name>
+    
+Please set the branch name according to the issue number and title. For example, if you are working on issue 15 - Add players to a game, create a new branch as follow:
+
+    $ git checkout i15-add-players-to-game
+    # Write your code
+    $ git add .     # No need to add each file separately
+    $ git commit -m "Commit message"
+    $ git push origin i15-add-players-to-game       # Push to this feature branch
+
