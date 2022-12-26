@@ -275,6 +275,7 @@ def request_to_join_group(request, group_id):
 
 # Join group using an invite link
 def join_group(request, group_id):
+    # Return 404 if group is not found
     try:
         group = Team.objects.get(id=group_id)
     except Team.DoesNotExist:
@@ -301,6 +302,7 @@ def join_group(request, group_id):
 
 # Delete a group
 def delete_group(request, group_id):
+    # Return 404 if group is not found
     try:
         group = Team.objects.get(id=group_id)
     except Team.DoesNotExist:

@@ -15,10 +15,12 @@
                 <div class="col-md-6"><strong class="me-2">Spaces left:</strong>{% if group_detail.max_member_num %}{{ group_detail.max_member_num|subtract:group_detail.members.count }} / {{group_detail.max_member_num}}{% else %}Unlimited{% endif %}</div>
             </div>
             <div class="mt-2"><strong class="me-2">Description:</strong>{{ group_detail.description }}</div>
+            {% if user in group_detail.get_admins %}
             <div class="mt-3">
                 <div class="fs-6 fw-bold">Join link:</div>
-                <div class="link-container position-relative"><span class="join-link">http://{{ request.get_host }}/join_group/{{ group_detail.id }}</span><span class="position-absolute copy-link">Copy</span></div>
+                <div class="link-container position-relative"><span class="join-link">https://{{ request.get_host }}/join_group/{{ group_detail.id }}</span><span class="position-absolute copy-link">Copy</span></div>
             </div>
+            {% endif %}
         </div>
     </div>
 

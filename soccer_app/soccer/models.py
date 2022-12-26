@@ -45,9 +45,18 @@ class Team(RandomIDModel):
     def __str__(self):
         return self.name
 
-    # Returns the captain of a group
+    # Return type: an User
+    # Return value: the captain of a group
     def get_captain(self):
         return self.teamadmin_set.get(captain=True)
+
+    # Return type: list of User
+    # Return value: a list of all group admins
+    def get_admins(self):
+        admins = []
+        for admin in self.teamadmin_set.all():
+            admins.append(admin.user)
+        return admins
 
     # Returns a string that contains all co-captains' names separated by a comma
     def get_cocaptains_str(self):
