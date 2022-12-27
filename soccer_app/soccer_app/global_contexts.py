@@ -1,5 +1,5 @@
 # pylint:
-from soccer.models import User
+from soccer.models import SoccerUser
 
 # Get current user information
 def get_user(request):
@@ -17,7 +17,7 @@ def get_user(request):
     name = request.session.get('name')
     phone_number = request.session.get('phone_number')
     return {
-        'user': User.objects.get(id=user_id),
+        'user': SoccerUser.objects.get(id=user_id),
         'user_id': user_id,
         'name': name,
         'phone_number': phone_number

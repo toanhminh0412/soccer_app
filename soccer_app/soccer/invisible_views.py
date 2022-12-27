@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.shortcuts import redirect
-from .forms import GameForm, TeamForm, GameTeamForm
-from .models import User, Game, GameTeam, Team, TeamAdmin, Request
+from .forms import GameForm, GroupForm, GameTeamForm
+from .models import User, Game, GameTeam, Group, GroupAdmin, Request
 
 ###################################
 ######### Helper functions ########
@@ -47,7 +47,7 @@ def modify_game(request, **kwargs):
             new_game.description = game_data['description']
 
             if game_data['team'] != 'none':
-                new_game.team = Team.objects.get(id=int(game_data['team']))
+                new_game.team = Group.objects.get(id=int(game_data['team']))
             new_game.save()
 
             # Add the current user as the game's organizer
@@ -173,7 +173,7 @@ def update_players(request, game_id):
 
             team = game.gameteam_set.filter(team_number=team_number)
             if len(team) == 0:
-                return JsonResponse({'status': 404, 'message': 'Team not found'})
+                return JsonResponse({'status': 404, 'message': 'Group not found'})
             
             team = team[0]
             bench = game.get_bench()
@@ -215,7 +215,7 @@ def modify_group(request, **kwargs):
         # Get current user, which will be set to be the group captain
         current_user = get_user(request)
         
-        form = TeamForm(request.POST)
+        form = GroupForm(request.POST)
 
         if form.is_valid():
             group_data = form.cleaned_data
@@ -223,10 +223,10 @@ def modify_group(request, **kwargs):
             new_group = None
             # Edit an existing group
             if group_id:
-                new_group = Team.objects.get(id=group_id)
+                new_group = Group.objects.get(id=group_id)
             # Create a new group
             else:
-                new_group = Team()
+                new_group = Group()
 
             new_group.name = group_data['name']
             if group_data['max_member_num'] is not None or group_data['max_member_num'] != -1:
@@ -238,7 +238,7 @@ def modify_group(request, **kwargs):
                 new_group.members.add(current_user)
 
                 # Make the creator captain of group
-                TeamAdmin.objects.create(team=new_group, user=current_user, captain=True)
+                GroupAdmin.objects.create(team=new_group, user=current_user, captain=True)
 
             # Pass a success message into homepage's context
             request.session['success'] = True
@@ -251,8 +251,8 @@ def modify_group(request, **kwargs):
 # Send a request to the group admins to join the group
 def request_to_join_group(request, group_id):
     try:
-        group = Team.objects.get(id=group_id)
-    except Team.DoesNotExist:
+        group = Group.objects.get(id=group_id)
+    except Group.DoesNotExist:
         return JsonResponse({'status': 404, 'message': 'Group not found'})
 
     # Get current user
@@ -277,8 +277,8 @@ def request_to_join_group(request, group_id):
 def join_group(request, group_id):
     # Return 404 if group is not found
     try:
-        group = Team.objects.get(id=group_id)
-    except Team.DoesNotExist:
+        group = Group.objects.get(id=group_id)
+    except Group.DoesNotExist:
         return JsonResponse({'status': 404, 'message': 'Group not found'})
 
     # Get current user
@@ -304,15 +304,15 @@ def join_group(request, group_id):
 def delete_group(request, group_id):
     # Return 404 if group is not found
     try:
-        group = Team.objects.get(id=group_id)
-    except Team.DoesNotExist:
+        group = Group.objects.get(id=group_id)
+    except Group.DoesNotExist:
         return JsonResponse({'status': 404, 'message': 'Group not found'})
     
     # Get current user
     current_user = get_user(request)
     
     # Non-captain (co-captains included) users can't delete group
-    if len(TeamAdmin.objects.filter(team=group, user=current_user, captain=True)) == 0:
+    if len(GroupAdmin.objects.filter(team=group, user=current_user, captain=True)) == 0:
         return redirect('/#groups')
 
      # Delete the group. Display success message
@@ -328,7 +328,7 @@ def accept_request(request, request_id):
     # Return 404 if request not found
     try:
         join_request = Request.objects.get(id=request_id)
-    except Team.DoesNotExist:
+    except Group.DoesNotExist:
         return JsonResponse({'status': 404, 'message': 'Request not found'})
 
     current_user = get_user(request)
@@ -364,7 +364,7 @@ def decline_request(request, request_id):
     # Return 404 if request not found
     try:
         join_request = Request.objects.get(id=request_id)
-    except Team.DoesNotExist:
+    except Group.DoesNotExist:
         return JsonResponse({'status': 404, 'message': 'Request not found'})
 
     current_user = get_user(request)

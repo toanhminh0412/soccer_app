@@ -1,41 +1,47 @@
 from django.db import models
 from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
+from django.contrib.auth.models import User
 
 from pytz import timezone
 from django_random_id_model import RandomIDModel
 
 # Create your models here.
-# User model of this application
-class User(models.Model):
+# SoccerUser model of this application
+class SoccerUser(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=10, null=False, blank=False, validators=[RegexValidator(regex='[0-9]{10}')])
-    name = models.CharField(max_length=30, null=False, blank=False)
     last_active = models.DateTimeField(auto_now=True)
 
+    # Name of the table is 'soccer_user'
+    # The entries are sorted by id
     class Meta:
-        db_table = 'soccer_user'
-        ordering = ['name']
+        db_table = 'soccer_custom_user'
+
+    # Get full name of the user
+    def get_full_name(self):
+        return f'{self.user.first_name} {self.user.last_name}'
 
     def __str__(self):
-        return self.name
+        return self.get_full_name()
 
     # Get all teams that are managed by this user
     def get_managed_teams(self):
         teams = []
-        for teamadmin in self.teamadmin_set.all():
-            teams.append(teamadmin.team)
+        for groupadmin in self.groupadmin_set.all():
+            teams.append(groupadmin.team)
         return teams
 
-# Teams:
+# Groups:
 # - There is a captain and co-captains in a team. These people can create/modify games for this team. They can also build teams.
-# - Team members can join games without having to request the captain or co-captains. They can choose to join a team, which can be changed later
+# - Group members can join games without having to request the captain or co-captains. They can choose to join a team, which can be changed later
 # by the captain or co-captains, or choose to be on the bench waiting to be arranged.
 # - Games of a team can be set to be visible to outsiders.
 # - Outsiders must request team captain or co-captains to join the team's games.
 # - Everytime a game is created or modified, team members are notified
-class Team(RandomIDModel):
+class Group(RandomIDModel):
     name = models.CharField(max_length=50, null=False, blank=False)
     max_member_num = models.IntegerField(null=True, blank=True)
-    members = models.ManyToManyField(User)
+    members = models.ManyToManyField(SoccerUser)
     description = models.CharField(max_length=300, null=False, blank=False)
 
     class Meta:
@@ -45,22 +51,22 @@ class Team(RandomIDModel):
     def __str__(self):
         return self.name
 
-    # Return type: an User
+    # Return type: an SoccerUser
     # Return value: the captain of a group
     def get_captain(self):
-        return self.teamadmin_set.get(captain=True)
+        return self.groupadmin_set.get(captain=True)
 
-    # Return type: list of User
+    # Return type: list of SoccerUser
     # Return value: a list of all group admins
     def get_admins(self):
         admins = []
-        for admin in self.teamadmin_set.all():
+        for admin in self.groupadmin_set.all():
             admins.append(admin.user)
         return admins
 
     # Returns a string that contains all co-captains' names separated by a comma
     def get_cocaptains_str(self):
-        cocaptains = self.teamadmin_set.filter(captain=False)
+        cocaptains = self.groupadmin_set.filter(captain=False)
         cocaptains_str = ''
         for cocaptain in cocaptains:
             cocaptains_str += f'{cocaptain.name}, '
@@ -73,19 +79,19 @@ class Team(RandomIDModel):
             users.append(request.user)
         return users
 
-# Team admins are captains or co-captains of teams
-class TeamAdmin(models.Model):
-    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=False, blank=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
+# Group admins are captains or co-captains of groups
+class GroupAdmin(models.Model):
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, null=False, blank=False)
+    user = models.ForeignKey(SoccerUser, on_delete=models.CASCADE, null=False, blank=False)
     # True if user is the captain, otherwise false, which means user is a co-captain
     captain = models.BooleanField(null=False, blank=False)
 
     class Meta:
-        db_table = 'soccer_team_admin'
+        db_table = 'soccer_group_admin'
         ordering = ['user']
 
     def __str__(self):
-        return f'{self.user.name} in {self.team.name}'
+        return f'{self.user.name} in {self.group.name}'
 
 # Games:
 # - Anyone can create/modify a game. This owner of a game is called the organizer. Organizer can build teams
@@ -93,8 +99,8 @@ class TeamAdmin(models.Model):
 # - They can join a game team or join bench waiting to be arranged.
 class Game(RandomIDModel):
     name = models.CharField(max_length=50, null=False, blank=False)
-    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True, blank=True)
-    organizers = models.ManyToManyField(User)
+    team = models.ForeignKey(Group, on_delete=models.CASCADE, null=True, blank=True)
+    organizers = models.ManyToManyField(SoccerUser)
     date = models.DateTimeField(null=False, blank=False)
     location = models.CharField(max_length=200, null=False, blank=False, default='location')
     max_player_num = models.IntegerField(null=True, blank=True)
@@ -153,10 +159,10 @@ class Game(RandomIDModel):
     def is_organizer(self, user):
         return len(self.organizers.filter(id=user.id)) > 0
 
-# Teams for a specific game. A game can have one or many teams that include players 
+# Groups for a specific game. A game can have one or many teams that include players 
 # who participate in that game
 class GameTeam(models.Model):
-    players = models.ManyToManyField(User)
+    players = models.ManyToManyField(SoccerUser)
     game = models.ForeignKey(Game, on_delete=models.CASCADE, null=False, blank=False)
     # If set to 0, the team is a bench, which mean players are not assigned to any team
     team_number = models.IntegerField(null=False, blank=False)
@@ -166,7 +172,7 @@ class GameTeam(models.Model):
         ordering = ['game']
 
     def __str__(self):
-        return f'Team {self.team_number} of game {self.game.name}'
+        return f'Group {self.team_number} of game {self.game.name}'
 
     # Assign a color to a game team based on the team's number
     def get_color(self):
@@ -209,7 +215,7 @@ class GameTeam(models.Model):
 class Request(models.Model):
     type = models.CharField(max_length=5, choices=[('group', 'group'), ('game', 'game')], default='group')
     # Sender of the request
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
+    user = models.ForeignKey(SoccerUser, on_delete=models.CASCADE, null=False, blank=False)
     # Receiver end of the request, depending on the type
     game = models.ForeignKey(Game, on_delete=models.CASCADE, null=True, blank=True)
-    group = models.ForeignKey(Team, on_delete=models.CASCADE, null=True, blank=True)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, null=True, blank=True)

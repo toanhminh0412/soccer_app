@@ -1,7 +1,9 @@
-{% if request.path != '/login/' %}
+{% if request.path != '/login' %}
+{% if request.path != '/signup' %}
 <a class="btn btn-success" id="menu-btn" data-bs-toggle="offcanvas" href="#menu-bar" role="button">
     Menu
 </a>
+{% endif %}
 {% endif %}
 
   

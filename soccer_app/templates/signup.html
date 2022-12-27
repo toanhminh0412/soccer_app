@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Signup{% endblock %}
+{% block content %}
+<div class="container-sm">
+    <form class="box-container col-xl-6" id="signup-form" action="/signup" method="post">
+        <h1 class="mb-4">Welcome to SoccerApp</h1>
+        {% csrf_token %}
+        <!-- Signup status message -->
+        {% include 'soccer/components/message/status_message.html' %}
+        <div class="mb-3">
+            <label>First name:</label>
+            <input type="text" class="form-control" name="first_name" pattern="[A-Za-z]+" maxlength="15" title="People can see your name when you join a game/group" required placeholder="First name">
+        </div>
+        <div class="mb-3">
+            <label>Last name:</label>
+            <input type="text" class="form-control" name="last_name" pattern="[A-Za-z]+" maxlength="15" title="People can see your name when you join a game/group" required placeholder="Last name">
+        </div>
+        <div class="mb-3">
+            <label>Phone number</label>
+            <input type="text" class="form-control" name="phone_number" pattern="[0-9]{10}" title="Phone number should be 10 digits" placeholder="Phone number should be 10 digits" required>
+        </div>
+        <div class="mb-3">
+            <label>Password:</label>
+            <input type="password" class="form-control" name="password" title="Password to log in" required placeholder="Password">
+        </div>
+        <div class="mb-3">
+            <label>Confirm Password:</label>
+            <input type="password" class="form-control" name="confirm_password" title="Make sure the passwords match" required placeholder="Make sure this matches the password above">
+        </div>
+        <div class="form-text mb-1">Already have an account? Click <a href="/login">here</a> to log in.</div>
+        <div class="form-text mb-3">Forgot your password? Click <a href="/reset_password">here</a> to reset.</div>
+        <button type="submit" class="btn btn-primary">Signup</button>
+    </form>
+</div>
+{% endblock %}
