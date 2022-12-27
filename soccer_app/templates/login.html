@@ -2,19 +2,21 @@
 {% block title %}Login{% endblock %}
 {% block content %}
 <div class="container-sm">
-    <form class="box-container col-xl-6" id="login-form" action="/login/" method="post">
-        {% csrf_token %}
+    <form class="box-container col-xl-6" id="login-form" action="/login" method="post">
         <h1 class="mb-4">Welcome to SoccerApp</h1>
+        {% csrf_token %}
+        <!-- Login status message -->
+        {% include 'soccer/components/message/status_message.html' %}
         <div class="mb-3">
             <label>Phone number</label>
-            <input type="text" class="form-control" name="phone_number" pattern="[0-9]{10}" title="Phone number must be 10 digits" required placeholder="Phone number (must be 10 digits)">
-            <div class="form-text">Phone number must be 10 digits</div>
+            <input type="text" class="form-control" name="phone_number" pattern="[0-9]{10}" title="Phone number" placeholder="Phone number" required>
         </div>
         <div class="mb-3">
-            <label>Name:</label>
-            <input type="text" class="form-control" name="name" pattern="[A-Z a-z]{3,30}" title="Name contains only letter. There must be between 3 and 30 characters" required placeholder="Full name">
-            <div class="form-text">Name contains only letter. There must be between 3 and 30 characters</div>
+            <label>Password:</label>
+            <input type="password" class="form-control" name="password" title="Password to log in" required placeholder="Password">
         </div>
+        <div class="form-text mb-1">Don't have an account? Click <a href="/signup">here</a> to sign up.</div>
+        <div class="form-text mb-3">Forgot your password? Click <a href="/reset_password">here</a> to reset.</div>
         <button type="submit" class="btn btn-primary">Login</button>
     </form>
 </div>

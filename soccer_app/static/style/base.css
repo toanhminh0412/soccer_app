@@ -58,7 +58,9 @@ body {
 }
 
 /*** Forms ***/
-#login-form {
+#login-form,
+#signup-form,
+#reset-password-form {
     margin-top: 150px;
 }
 

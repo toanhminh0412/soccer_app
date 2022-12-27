@@ -2,7 +2,7 @@
 from django.views.generic import TemplateView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-from .models import Game, User, TeamAdmin, Team
+from .models import Game, SoccerUser, GroupAdmin, Group
 from .mixins import MessageViewMixin
 
 # Dashboard: Allows users to manage their games and teams
@@ -14,7 +14,7 @@ class Dashboard(MessageViewMixin, TemplateView):
         
         # Get current user information
         user_id = int(self.request.session.get('user_id', -1))
-        user = User.objects.get(id=user_id)
+        user = SoccerUser.objects.get(id=user_id)
         
         # Get all games that this user is an organizer
         context['your_games'] = []
@@ -25,11 +25,11 @@ class Dashboard(MessageViewMixin, TemplateView):
         # Get all groups that this user is an admin
         context['your_groups_as_captain'] = []
         context['your_groups_as_cocaptain'] = []
-        for team_admin in user.teamadmin_set.all():
-            if team_admin.captain:
-                context['your_groups_as_captain'].append(team_admin.team)
+        for group_admin in user.groupadmin_set.all():
+            if group_admin.captain:
+                context['your_groups_as_captain'].append(group_admin.group)
             else:
-                context['your_groups_as_cocaptain'].append(team_admin.team)
+                context['your_groups_as_cocaptain'].append(group_admin.group)
 
         # Get all requests to join groups that this user is an admin of
         context['group_requests'] = []
@@ -57,13 +57,13 @@ class GameDetailView(MessageViewMixin, DetailView):
 
 # GroupsView that shows all the currently active groups
 class GroupsView(MessageViewMixin, ListView):
-    model = Team
+    model = Group
     template_name = "soccer/groups.html"
     context_object_name = "all_groups"
 
 # A group detail page
 class GroupDetailView(MessageViewMixin, DetailView):
-    model = Team
+    model = Group
     template_name = "soccer/group_detail.html"
     pk_url_kwarg = "group_id"
     context_object_name = "group_detail"

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Game, Team
+from .models import Game, Group
 
 # Form for creating a new game
 class GameForm(forms.ModelForm):
@@ -10,9 +10,9 @@ class GameForm(forms.ModelForm):
         fields = ['name', 'date', 'location', 'max_player_num', 'team_num', 'visible_to_everyone', 'description']
 
 # Form for creating a new team
-class TeamForm(forms.ModelForm):
+class GroupForm(forms.ModelForm):
     class Meta:
-        model = Team
+        model = Group
         fields = ['name', 'max_member_num', 'description']
 
 # Form for updating players for a game's team

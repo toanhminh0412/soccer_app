@@ -20,6 +20,8 @@ from . import auth_view
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('soccer.urls')),
-    path('login/', auth_view.LoginView.as_view(), name='login'),
-    path('logout/', auth_view.logout_view, name='logout'),
+    path('login', auth_view.LoginView.as_view(), name='login'),
+    path('signup', auth_view.SignupView.as_view(), name='signup'),
+    path('reset_password', auth_view.ResetPasswordView.as_view(), name='reset_password'),
+    path('logout', auth_view.logout_view, name='logout'),
 ]
