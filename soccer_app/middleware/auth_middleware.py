@@ -9,6 +9,7 @@ STATIC_PATH = "static/*"
 LOGOUT_PATH = "/logout"
 SIGNUP_PATH = "/signup"
 RESET_PASSWORD_PATH = "/reset_password"
+FAVICON_PATH = "/favicon.ico"
 
 class AuthMiddleware():
     """
@@ -21,10 +22,11 @@ class AuthMiddleware():
     def __call__(self, request):
         # redirect user to login page if user is not authenticated
         if not re.match(request.path, STATIC_PATH)\
-        and request.path not in (LOGIN_PATH, LOGIN_PATH, SIGNUP_PATH, RESET_PASSWORD_PATH)\
+        and request.path not in (LOGIN_PATH, LOGOUT_PATH, SIGNUP_PATH, RESET_PASSWORD_PATH, FAVICON_PATH)\
         and ADMIN_PATH not in request.path\
         and not request.session.get('user_id', None):
-
+            print('This middleware is called')
+            print(request.path)
             # If an authenticated user clicks on a link to join game,
             # they will be redirected to the join game url after logging in
             if 'join_game' in request.path and not request.session.get('user_id', None):
