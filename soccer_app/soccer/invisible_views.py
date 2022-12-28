@@ -25,11 +25,9 @@ def modify_game(request, **kwargs):
                 return redirect('/')
 
         form = GameForm(request.POST)
-        print(form)
         
         if form.is_valid():
             game_data = form.cleaned_data
-            print('Group: ' + game_data['group'])
             
             new_game = None
             old_team_num = 0

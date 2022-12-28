@@ -7,7 +7,7 @@
         <div class="card-body game-body">
             <h4 class="card-title">{{ group.name }}</h4>
             <div class="card-text mt-3">
-                <div><strong class="me-2">Captain:</strong>{{ group.get_captain.user.name }}</div>
+                <div><strong class="me-2">Captain:</strong>{{ group.get_captain.user }}</div>
                 <div><strong class="me-2">Co-captains:</strong>{{ group.get_cocaptains_str }}</div>
                 <div><strong class="me-2">Spaces left:</strong>{% if group.max_member_num %}{{ group.max_member_num|subtract:group.members.count }} / {{group.max_member_num}}{% else %}Unlimited{% endif %}</div>
                 <div><strong class="me-2">Description:</strong>{{ group.description }}</div>
