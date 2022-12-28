@@ -5,6 +5,8 @@
     <form class="box-container col-xl-6" id="signup-form" action="/signup" method="post">
         <h1 class="mb-4">Welcome to SoccerApp</h1>
         {% csrf_token %}
+        <!-- This message is shown if a player is signing up to join a game/group -->
+        {% include 'soccer/components/message/redirect_message.html' %}
         <!-- Signup status message -->
         {% include 'soccer/components/message/status_message.html' %}
         <div class="mb-3">

@@ -29,8 +29,9 @@ class AuthMiddleware():
             print(request.path)
             # If an authenticated user clicks on a link to join game,
             # they will be redirected to the join game url after logging in
-            if 'join_game' in request.path and not request.session.get('user_id', None):
+            if ('join_game' in request.path or 'join_group' in request.path) and not request.session.get('user_id', None):
                 request.session['redirect_url'] = request.path
+                request.session['redirect_message'] = "Please login before you can join. If you don't have an account, please signup."
 
             return redirect('/login')
 

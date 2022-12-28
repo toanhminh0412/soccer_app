@@ -8,7 +8,7 @@ from django_random_id_model import RandomIDModel
 # Create your models here.
 # SoccerUser model of this application
 class SoccerUser(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=False, blank=False)
     phone_number = models.CharField(max_length=10, null=False, blank=False, validators=[RegexValidator(regex='[0-9]{10}')])
     last_active = models.DateTimeField(auto_now=True)
 
@@ -25,11 +25,11 @@ class SoccerUser(models.Model):
         return self.get_full_name()
 
     # Get all teams that are managed by this user
-    def get_managed_teams(self):
-        teams = []
+    def get_managed_groups(self):
+        groups = []
         for groupadmin in self.groupadmin_set.all():
-            teams.append(groupadmin.team)
-        return teams
+            groups.append(groupadmin.group)
+        return groups
 
 # Groups:
 # - There is a captain and co-captains in a team. These people can create/modify games for this team. They can also build teams.
@@ -69,7 +69,7 @@ class Group(RandomIDModel):
         cocaptains = self.groupadmin_set.filter(captain=False)
         cocaptains_str = ''
         for cocaptain in cocaptains:
-            cocaptains_str += f'{cocaptain.name}, '
+            cocaptains_str += f'{cocaptain}, '
         return cocaptains_str[:-2] if cocaptains_str != '' else 'None'
 
     # Get all users that have requested to join this group
@@ -91,7 +91,7 @@ class GroupAdmin(models.Model):
         ordering = ['user']
 
     def __str__(self):
-        return f'{self.user.name} in {self.group.name}'
+        return f'{self.user} in {self.group.name}'
 
 # Games:
 # - Anyone can create/modify a game. This owner of a game is called the organizer. Organizer can build teams
@@ -99,7 +99,7 @@ class GroupAdmin(models.Model):
 # - They can join a game team or join bench waiting to be arranged.
 class Game(RandomIDModel):
     name = models.CharField(max_length=50, null=False, blank=False)
-    team = models.ForeignKey(Group, on_delete=models.CASCADE, null=True, blank=True)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, null=True, blank=True)
     organizers = models.ManyToManyField(SoccerUser)
     date = models.DateTimeField(null=False, blank=False)
     location = models.CharField(max_length=200, null=False, blank=False, default='location')
@@ -200,7 +200,7 @@ class GameTeam(models.Model):
     def get_player_names(self):
         names = ''
         for player in self.players.all():
-            names += player.name + ','
+            names += str(player) + ','
         return names
 
     # Return all players id in a string, separated by a comma

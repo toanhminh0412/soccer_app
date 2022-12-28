@@ -62,10 +62,6 @@ class ResetPasswordForm(forms.Form):
     confirm_password = forms.CharField(max_length=30, required=False)
     phone_number = forms.CharField(max_length=10, required=False)
     confirmation_code = forms.CharField(max_length=10, required=False)
-
-    # class Meta:
-    #     model = SoccerUser
-    #     fields = ['phone_number']
     
 
 # User must login to the application to use app's features
@@ -78,15 +74,20 @@ class LoginView(LoginRedirectMixin, TemplateView):
         # Display message if any
         context['success'] = self.request.session.get('success', None)
         context['message'] = self.request.session.get('message', None)
+
+        # This message only shows when user is logging in to join a game/group
+        context['redirect_message'] = self.request.session.get('redirect_message', None)
         
         # Clear message in session if exists
-        # if 'success' in self.request.session:
-        #     del self.request.session['success']
-        # if 'message' in self.request.session:
-        #     del self.request.session['message']
-        # if 'signup_confirmation_code' in self.request.session:
-        #     del self.request.session['signup_confirmation_code']
-        self.request.session.clear()
+        # Can't use .clear() because can't delete redirection link
+        if 'success' in self.request.session:
+            del self.request.session['success']
+        if 'message' in self.request.session:
+            del self.request.session['message']
+        if 'signup_confirmation_code' in self.request.session:
+            del self.request.session['signup_confirmation_code']
+        if 'reset_password_confirmation_code' in self.request.session:
+            del self.request.session['reset_password_confirmation_code']
         
         return context
 
@@ -129,6 +130,8 @@ class LoginView(LoginRedirectMixin, TemplateView):
             # they will be redirected to the join game url after logging in
             redirect_url = request.session.get('redirect_url', None)
             if redirect_url:
+                del request.session['redirect_url']
+                del request.session['redirect_message']
                 return redirect(redirect_url)
 
             # Redirect to game page
@@ -159,6 +162,9 @@ class SignupView(LoginRedirectMixin, TemplateView):
         context['signup_first_name'] = self.request.session.get('signup_first_name', None)
         context['signup_last_name'] = self.request.session.get('signup_last_name', None)
         context['signup_confirmation_code'] = self.request.session.get('signup_confirmation_code', None)
+
+        # This message only shows when user is signing up to join a game/group
+        context['redirect_message'] = self.request.session.get('redirect_message', None)
 
         # Clear message in session if exists
         if 'success' in self.request.session:
@@ -258,6 +264,14 @@ class SignupView(LoginRedirectMixin, TemplateView):
                 request.session['phone_number'] = phone_number
                 request.session['name'] = f'{django_user.first_name} {django_user.last_name}'
 
+                # If an authenticated user clicks on a link to join game,
+                # they will be redirected to the join game url after logging in
+                redirect_url = request.session.get('redirect_url', None)
+                if redirect_url:
+                    del request.session['redirect_url']
+                    del request.session['redirect_message']
+                    return redirect(redirect_url)
+
                 # Redirect to game page
                 return redirect('/game')
             
@@ -288,6 +302,9 @@ class ResetPasswordView(LoginRedirectMixin, TemplateView):
         # Display message if any
         context['success'] = self.request.session.get('success', None)
         context['message'] = self.request.session.get('message', None)
+
+        # This message only shows when user is logging in to join a game/group
+        context['redirect_message'] = self.request.session.get('redirect_message', None)
 
         # Ask user for phone number before asking for a new password
         # This is to send a confirmation code to verify user owns this phone number

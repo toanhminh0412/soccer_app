@@ -1,14 +1,14 @@
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from .forms import GameForm, GroupForm, GameTeamForm
-from .models import User, Game, GameTeam, Group, GroupAdmin, Request
+from .models import SoccerUser, Game, GameTeam, Group, GroupAdmin, Request
 
 ###################################
 ######### Helper functions ########
 ###################################
 # Get current user
 def get_user(request):
-    return User.objects.get(id=int(request.session['user_id']))
+    return SoccerUser.objects.get(id=int(request.session['user_id']))
 
 # Admin View: With no argument - Create a new game
 # Admin View: With argument <game_id> - Edit game with id <game_id>
@@ -25,10 +25,11 @@ def modify_game(request, **kwargs):
                 return redirect('/')
 
         form = GameForm(request.POST)
+        print(form)
         
         if form.is_valid():
             game_data = form.cleaned_data
-            print('Group: ' + game_data['team'])
+            print('Group: ' + game_data['group'])
             
             new_game = None
             old_team_num = 0
@@ -46,8 +47,10 @@ def modify_game(request, **kwargs):
             new_game.visible_to_everyone = game_data['visible_to_everyone']
             new_game.description = game_data['description']
 
-            if game_data['team'] != 'none':
-                new_game.team = Group.objects.get(id=int(game_data['team']))
+            if game_data['group'] != 'none':
+                new_game.group = Group.objects.get(id=int(game_data['group']))
+            else:
+                new_game.group = None
             new_game.save()
 
             # Add the current user as the game's organizer
@@ -88,6 +91,7 @@ def modify_game(request, **kwargs):
         # Pass a failure message into homepage's context
         if game_id:
             game = Game.objects.get(id=game_id)
+        
         request.session['success'] = False
         request.session['message'] = f'Failed to edit game {game.name}' if game_id else 'Failed to create game'
         return redirect('/')
@@ -187,7 +191,7 @@ def update_players(request, game_id):
             team.players.clear()
             for id in player_ids:
                 if id != '':
-                    player = User.objects.get(id=int(id))
+                    player = SoccerUser.objects.get(id=int(id))
                     team.players.add(player)
 
             team_players = team.players.all()
@@ -238,7 +242,7 @@ def modify_group(request, **kwargs):
                 new_group.members.add(current_user)
 
                 # Make the creator captain of group
-                GroupAdmin.objects.create(team=new_group, user=current_user, captain=True)
+                GroupAdmin.objects.create(group=new_group, user=current_user, captain=True)
 
             # Pass a success message into homepage's context
             request.session['success'] = True
@@ -312,7 +316,7 @@ def delete_group(request, group_id):
     current_user = get_user(request)
     
     # Non-captain (co-captains included) users can't delete group
-    if len(GroupAdmin.objects.filter(team=group, user=current_user, captain=True)) == 0:
+    if len(GroupAdmin.objects.filter(group=group, user=current_user, captain=True)) == 0:
         return redirect('/#groups')
 
      # Delete the group. Display success message
@@ -336,7 +340,7 @@ def accept_request(request, request_id):
     # Request to join a group
     if join_request.group:
         # Non-admin group member can't accept a request
-        if len(join_request.group.teamadmin_set.filter(user=current_user)) == 0:
+        if len(join_request.group.groupadmin_set.filter(user=current_user)) == 0:
             return JsonResponse({'status': 403, 'message': 'You are unauthorized to visit this url'})
 
         # Add member to the group and delete the request
@@ -372,7 +376,7 @@ def decline_request(request, request_id):
     # Request to join a group
     if join_request.group:
         # Non-admin group member can't decline a request
-        if len(join_request.group.teamadmin_set.filter(user=current_user)) == 0:
+        if len(join_request.group.groupadmin_set.filter(user=current_user)) == 0:
             return JsonResponse({'status': 403, 'message': 'You are unauthorized to visit this url'})
 
     # Request to join a game

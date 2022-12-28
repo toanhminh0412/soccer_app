@@ -9,7 +9,7 @@
             <h5 class="card-subtitle">{{ game.location }}</h5>
             <div class="card-text mt-3">
                 <div><strong class="me-2">Organizer:</strong>{{ game.get_creator }}</div>
-                <div><strong class="me-2">Team:</strong>{% if game.team %}{{ game.team.name }}{% else %}Not a team{% endif %}</div>
+                <div><strong class="me-2">Group:</strong>{% if game.group %}{{ game.group.name }}{% else %}Do not belong to a group{% endif %}</div>
                 <div><strong class="me-2">Spaces left:</strong>{{ game.max_player_num|subtract:game.total_players }} / {{game.max_player_num}}</div>
                 <div><strong class="me-2">Number of teams:</strong>{{ game.team_num }}</div>
                 <div><strong class="me-2">Description:</strong>{{ game.description }}</div>
