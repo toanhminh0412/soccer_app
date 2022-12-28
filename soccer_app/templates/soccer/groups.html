@@ -28,7 +28,7 @@
     <!-- Display of your groups -->
     <div class="mt-5 your-groups-container d-none">
         {% for group in all_groups %}
-        {% if user in group.members.all %}
+        {% if soccer_user in group.members.all %}
         {% include 'soccer/components/container/group.html' %}
         {% endif %}
         {% endfor %}

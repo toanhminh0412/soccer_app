@@ -8,25 +8,39 @@
         <!-- Signup status message -->
         {% include 'soccer/components/message/status_message.html' %}
         <div class="mb-3">
-            <label>First name:</label>
-            <input type="text" class="form-control" name="first_name" pattern="[A-Za-z]+" maxlength="15" title="People can see your name when you join a game/group" required placeholder="First name">
+            <label class="{% if signup_first_name %}d-none{% endif %}">First name:</label>
+            <input type="text" class="form-control {% if signup_first_name %}d-none{% endif %}" name="first_name" {% if signup_first_name %}value="{{ signup_first_name }}"{% endif %} pattern="[A-Za-z]+" maxlength="15" title="People can see your name when you join a game/group" required placeholder="First name">
         </div>
         <div class="mb-3">
-            <label>Last name:</label>
-            <input type="text" class="form-control" name="last_name" pattern="[A-Za-z]+" maxlength="15" title="People can see your name when you join a game/group" required placeholder="Last name">
+            <label class="{% if signup_last_name %}d-none{% endif %}">Last name:</label>
+            <input type="text" class="form-control {% if signup_last_name %}d-none{% endif %}" name="last_name" {% if signup_last_name %}value="{{ signup_last_name }}"{% endif %} pattern="[A-Za-z]+" maxlength="15" title="People can see your name when you join a game/group" required placeholder="Last name">
         </div>
         <div class="mb-3">
-            <label>Phone number</label>
-            <input type="text" class="form-control" name="phone_number" pattern="[0-9]{10}" title="Phone number should be 10 digits" placeholder="Phone number should be 10 digits" required>
+            <label class="{% if signup_phone_number %}d-none{% endif %}">Phone number</label>
+            <input type="text" class="form-control {% if signup_phone_number %}d-none{% endif %}" name="phone_number" {% if signup_phone_number %}value="{{ signup_phone_number }}"{% endif %} pattern="[0-9]{10}" title="Phone number should be 10 digits" placeholder="Phone number should be 10 digits" required>
         </div>
         <div class="mb-3">
-            <label>Password:</label>
-            <input type="password" class="form-control" name="password" title="Password to log in" required placeholder="Password">
+            <label class="{% if signup_password %}d-none{% endif %}">Password:</label>
+            <input type="password" class="form-control {% if signup_password %}d-none{% endif %}" name="password" {% if signup_password %}value="{{ signup_password }}"{% endif %} title="Password to log in" required placeholder="Password">
         </div>
+        {% if not signup_password %}
+        {% if not signup_confirmation_code %}
         <div class="mb-3">
             <label>Confirm Password:</label>
             <input type="password" class="form-control" name="confirm_password" title="Make sure the passwords match" required placeholder="Make sure this matches the password above">
         </div>
+        {% endif %}
+        {% endif %}
+
+        {% if signup_password %}
+        {% if signup_confirmation_code %}
+        <p>We just sent you a confirmation code to {{ signup_phone_number }}. Please type in the code below</p>
+        <div class="mb-3">
+            <label>Confirmation code:</label>
+            <input type="text" class="form-control" name="confirmation_code" pattern="[a-z]{10}" title="Confirmation code to verify phone number" placeholder="Confirmation code should be 10 lowercase letters" required>
+        </div>
+        {% endif %}
+        {% endif %}
         <div class="form-text mb-1">Already have an account? Click <a href="/login">here</a> to log in.</div>
         <div class="form-text mb-3">Forgot your password? Click <a href="/reset_password">here</a> to reset.</div>
         <button type="submit" class="btn btn-primary">Signup</button>

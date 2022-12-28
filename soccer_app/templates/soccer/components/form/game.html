@@ -18,7 +18,7 @@
                         <label class="form-label">Group:</label>
                         <select name="team" class="form-control" placeholder="Group that this game is created for">
                             <option value="none">None</option>
-                            {% for team in user.get_managed_teams %}
+                            {% for team in soccer_user.get_managed_teams %}
                             <option value="{{team.id}}" {% if game.team == team %}selected{% elif team.id == group_detail.id %}selected{% endif %}>{{team.name}}</option>
                             {% endfor %}
                         </select>

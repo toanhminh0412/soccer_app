@@ -23,7 +23,7 @@
     <!-- Display of your games -->
     <div class="mt-5 your-games-container d-none">
         {% for game in all_games %}
-        {% if user in game.get_players %}
+        {% if soccer_user in game.get_players %}
         {% include 'soccer/components/container/game.html' %}
         {% endif %}
         {% endfor %}

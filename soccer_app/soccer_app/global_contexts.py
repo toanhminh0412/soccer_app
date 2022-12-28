@@ -8,7 +8,7 @@ def get_user(request):
     # if user is not logged in, return None for all values
     if not user_id:
         return {
-            'user': None,
+            'soccer_user': None,
             'user_id': None,
             'name': None,
             'phone_number': None
@@ -17,7 +17,7 @@ def get_user(request):
     name = request.session.get('name')
     phone_number = request.session.get('phone_number')
     return {
-        'user': SoccerUser.objects.get(id=user_id),
+        'soccer_user': SoccerUser.objects.get(id=user_id),
         'user_id': user_id,
         'name': name,
         'phone_number': phone_number

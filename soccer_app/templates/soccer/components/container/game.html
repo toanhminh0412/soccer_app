@@ -24,7 +24,7 @@
             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editGame{{ game.id }}FormModal">Edit game</button>
             {% else %}
             <a href="/game/{{ game.id }}" type="button" class="btn btn-secondary btn-sm">View details</a>
-            <a href="/join_game/{{ game.id }}" type="button" class="btn btn-success btn-sm {% if user in game.get_players %}disabled{% endif %}">Join game</a>
+            <a href="/join_game/{{ game.id }}" type="button" class="btn btn-success btn-sm {% if soccer_user in game.get_players %}disabled{% endif %}">Join game</a>
             {% endif %}
         </div>
     </div>
