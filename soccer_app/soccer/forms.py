@@ -3,7 +3,7 @@ from .models import Game, Group
 
 # Form for creating a new game
 class GameForm(forms.ModelForm):
-    team = forms.CharField(max_length=10)
+    group = forms.CharField(max_length=12)
 
     class Meta:
         model = Game

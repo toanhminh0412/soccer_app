@@ -16,7 +16,7 @@
             <div class="fs-6 fst-italic fw-light">Click on a player to put them into the team</div>
             <div class="bench-player-container row mt-2">
                 {% for player in game_detail.get_bench.players.all %}
-                <div class="bench-player tag-container w-fit bg-light text-center mt-1" player-id="{{ player.id }}">{{ player.name }}</div>
+                <div class="bench-player tag-container w-fit bg-light text-center mt-1" player-id="{{ player.id }}">{{ player }}</div>
                 {% endfor %}
             </div>
             <h5 class="mt-3">Team players</h5>
@@ -26,7 +26,7 @@
                 <div class="empty-team-text mt-1 text-center">No player</div>
                 {% else %}
                 {% for player in team.players.all %}
-                <div class="team-player tag-container {{ team.get_color }} text-center mt-1 position-relative" player-id="{{ player.id }}">{{ player.name }}<span class="position-absolute end-3"><button type="button" class="remove-team-player-btn btn-close" aria-label="Close"></button></span></div>
+                <div class="team-player tag-container {{ team.get_color }} text-center mt-1 position-relative" player-id="{{ player.id }}">{{ player }}<span class="position-absolute end-3"><button type="button" class="remove-team-player-btn btn-close" aria-label="Close"></button></span></div>
                 {% endfor %}
                 {% endif %}
             </div>
@@ -55,7 +55,7 @@
         <div class="mt-3">
             <div class="row">
                 <div class="col-md-6"><strong class="me-2">Organizer:</strong>{{ game_detail.get_creator }}</div>
-                <div class="col-md-6"><strong class="me-2">Team:</strong>{% if game_detail.team %}{{ game_detail.team.name }}{% else %}Not a team{% endif %}</div>
+                <div class="col-md-6"><strong class="me-2">Group:</strong>{% if game_detail.group %}{{ game_detail.group.name }}{% else %}Do not belong to a group{% endif %}</div>
             </div>
             <div class="row">
                 <div class="col-md-6"><strong class="me-2">Spaces left:</strong>{{ game_detail.max_player_num|subtract:game_detail.total_players }}</div>
@@ -63,7 +63,7 @@
             </div>
             <div class="mt-2"><strong class="me-2">Description:</strong>{{ game_detail.description }}</div>
         </div>
-        {% if user in game_detail.organizers.all %}
+        {% if soccer_user in game_detail.organizers.all %}
         <div class="mt-3">
             <div class="fs-6 fw-bold">Join link:</div>
             <div class="link-container position-relative"><span class="join-link">https://{{ request.get_host }}/join_game/{{ game_detail.id }}</span><span class="position-absolute copy-link">Copy</span></div>
@@ -74,7 +74,7 @@
                 <h5>Bench</h5>
                 <div class="row">
                     {% for player in game_detail.get_bench.players.all %}
-                    <div class="col-4 col-lg-2 tag-container bg-light text-center mt-1">{{player.name}}</div>
+                    <div class="col-4 col-lg-2 tag-container bg-light text-center mt-1">{{ player }}</div>
                     {% endfor %}
                 </div>
                 <div class="mt-3 fs-6 fst-italic">Captain will put you in a team</div>
@@ -83,9 +83,9 @@
                 <div class="row">
                     {% for team in game_detail.get_teams %}
                     <div class="col-6 col-lg-{{team.get_team_num_on_a_row_lg}} mt-1">
-                        <h5>Team {{ team.team_number }}{% if user in game_detail.organizers.all %}<span><button type="button" class="ms-3 btn btn-sm btn-outline-primary border-blue-200 text-blue-200" data-bs-toggle="modal" data-bs-target="#teamBuilderModal{{ team.id }}">Edit players</button></span>{% endif %}</h5>
+                        <h5>Team {{ team.team_number }}{% if soccer_user in game_detail.organizers.all %}<span><button type="button" class="ms-3 btn btn-sm btn-outline-primary border-blue-200 text-blue-200" data-bs-toggle="modal" data-bs-target="#teamBuilderModal{{ team.id }}">Edit players</button></span>{% endif %}</h5>
                         {% for player in team.players.all %}
-                        <div class="tag-container {{team.get_color}} text-center mt-1">{{player.name}}</div>
+                        <div class="tag-container {{team.get_color}} text-center mt-1">{{ player }}</div>
                         {% endfor %}
                     </div>
                     {% endfor %}

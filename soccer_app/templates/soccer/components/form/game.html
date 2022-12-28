@@ -16,10 +16,10 @@
                     
                     <div class="mb-3">
                         <label class="form-label">Group:</label>
-                        <select name="team" class="form-control" placeholder="Group that this game is created for">
+                        <select name="group" class="form-control" placeholder="Group that this game is created for">
                             <option value="none">None</option>
-                            {% for team in soccer_user.get_managed_teams %}
-                            <option value="{{team.id}}" {% if game.team == team %}selected{% elif team.id == group_detail.id %}selected{% endif %}>{{team.name}}</option>
+                            {% for group in soccer_user.get_managed_groups %}
+                            <option value="{{group.id}}" {% if game.group == group %}selected{% elif group.id == group_detail.id %}selected{% endif %}>{{group.name}}</option>
                             {% endfor %}
                         </select>
                         <div class="form-text">Only group members can see this game, unless you set the game to be <strong>visible to everyone</strong></div>
