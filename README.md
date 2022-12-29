@@ -9,10 +9,10 @@ To be written
 ## Set up and development
 This document assumes you are working with Linux operating system
 ### Clone the Project with HTTPS
-    $ git clone https://gitlab.com/uvic-arcsoft/contacts.git
+    $ git clone https://github.com/toanhminh0412/soccer_app.git
 
 ### Create a virtual environment inside the Git project
-    $ cd contacts
+    $ cd soccer_app
     $ python3 -m venv venv
     $ . venv/bin/activate
     $ pip install --upgrade pip     # Upgrade pip
@@ -21,16 +21,21 @@ This document assumes you are working with Linux operating system
 ### Configure the application
 From the root directotry, run:
 
-    $ touch soccer_app/soccer_app/.env   # Create a file for environment variables
+    $ touch soccer_app/.env   # Create a file for environment variables
     $ python3 soccer_app/manage.py shell -c 'from django.core.management import utils; print(utils.get_random_secret_key())' # Generate a Django SECRET_KEY
-    $ go to the soccer_app/soccer_app/.env file, add two lines:
+    $ go to the soccer_app/.env file, add two lines:
     1. SECRET_KEY=<output_from_the_command_above>
     2. DEBUG=True
+    3. ALLOWED_HOSTS=127.0.0.1,localhost
+    4. TRUSTED_ORIGINS=["http://127.0.0.1:8000","http://localhost:8000"]
+    5. TWILIO_ACCOUNT_SID=account_id
+    6. TWILIO_AUTH_TOKEN=auth_token
+    7. TWILIO_PHONE_NUMBER=number
 
 ### Start up the application
 The following command line from the root directory tells Django to run on `localhost` and use port `4001`:
 
-    $ python3 app_starter/manage.py runserver 127.0.0.1:4001
+    $ python3 soccer_app/manage.py runserver 127.0.0.1:4001
     Watching for file changes with StatReloader
     Performing system checks...
 
@@ -44,11 +49,11 @@ The following command line from the root directory tells Django to run on `local
 When working on an issue, make sure you are in **main**:
 
     $ git pull origin main      # Update your local git to match remote git
-    $ git checkout <new_branch_name>
+    $ git checkout -b <new_branch_name>
     
 Please set the branch name according to the issue number and title. For example, if you are working on issue 15 - Add players to a game, create a new branch as follow:
 
-    $ git checkout i15-add-players-to-game
+    $ git checkout -b i15-add-players-to-game
     # Write your code
     $ git add .     # No need to add each file separately
     $ git commit -m "Commit message"
