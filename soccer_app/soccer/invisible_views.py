@@ -1,7 +1,22 @@
+import os
+from twilio.rest import Client
+
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from .forms import GameForm, GroupForm, GameTeamForm
 from .models import SoccerUser, Game, GameTeam, Group, GroupAdmin, Request
+
+# Enable the line below if need to specify the path of .env file
+import environ
+from pathlib import Path
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+# Get access information for Twilio
+account_sid = os.environ.get('TWILIO_ACCOUNT_SID', None)
+auth_token = os.environ.get('TWILIO_AUTH_TOKEN', None)
 
 ###################################
 ######### Helper functions ########
@@ -47,9 +62,34 @@ def modify_game(request, **kwargs):
 
             if game_data['group'] != 'none':
                 new_game.group = Group.objects.get(id=int(game_data['group']))
+
             else:
                 new_game.group = None
             new_game.save()
+
+            if new_game.group and not game_id:
+                group = new_game.group
+                # Send an SMS message to every member in the group information about the game
+                # with an invitation link
+                client = Client(account_sid, auth_token)
+                for member in group.members.all():
+                    print('sending a message')
+                    message = client.messages\
+                    .create(
+                        body=(f"Group {group.name} has a new game:\n"
+                            f"Name: {new_game.name}\n"
+                            f"Date: {new_game.date}\n"
+                            f"Location: {new_game.location}\n"
+                            f"Max players: {new_game.max_player_num}\n"
+                            f"Number of teams: {new_game.team_num}\n"
+                            f"Description: {new_game.description}\n"
+                            "If you would like to join the game, click the link down below:\n"
+                            f"https://{request.get_host()}/join_game/{new_game.id}\n"
+                            "Hope you have a good day!!"),
+                        from_='+1 236 303 5408',
+                        to=f'+1{member.phone_number}'
+                    )
+                    print(message.sid)
 
             # Add the current user as the game's organizer
             if not game_id:
