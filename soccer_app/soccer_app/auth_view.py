@@ -22,7 +22,7 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 # Get access information for Twilio
 account_sid = os.environ.get('TWILIO_ACCOUNT_SID', None)
 auth_token = os.environ.get('TWILIO_AUTH_TOKEN', None)
-
+twilio_phone_number = os.environ.get('TWILIO_PHONE_NUMBER', None)
 
 # This mixin redirects a view to homepage if the user is logged in
 class LoginRedirectMixin:
@@ -238,7 +238,7 @@ class SignupView(LoginRedirectMixin, TemplateView):
                     .create(
                         body=f"Here is the confirmation code for Victoria Soccer App: {random_code}.\
                                 Have a nice day.",
-                        from_='+1 236 303 5408',
+                        from_=twilio_phone_number,
                         to=f'+1{phone_number}'
                     )
                 print(message.sid)
@@ -355,7 +355,7 @@ class ResetPasswordView(LoginRedirectMixin, TemplateView):
                         .create(
                             body=f"Here is the confirmation code for Victoria Soccer App: {random_code}.\
                                  Have a nice day.",
-                            from_='+1 236 303 5408',
+                            from_=twilio_phone_number,
                             to=f'+1{phone_number}'
                         )
                     print(message.sid)

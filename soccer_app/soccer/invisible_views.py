@@ -17,6 +17,7 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 # Get access information for Twilio
 account_sid = os.environ.get('TWILIO_ACCOUNT_SID', None)
 auth_token = os.environ.get('TWILIO_AUTH_TOKEN', None)
+twilio_phone_number = os.environ.get('TWILIO_PHONE_NUMBER', None)
 
 ###################################
 ######### Helper functions ########
@@ -85,8 +86,8 @@ def modify_game(request, **kwargs):
                             f"Description: {new_game.description}\n"
                             "If you would like to join the game, click the link down below:\n"
                             f"https://{request.get_host()}/join_game/{new_game.id}\n"
-                            "Hope you have a good day!!"),
-                        from_='+1 236 303 5408',
+                            "Have a good day!!"),
+                        from_=twilio_phone_number,
                         to=f'+1{member.phone_number}'
                     )
                     print(message.sid)
