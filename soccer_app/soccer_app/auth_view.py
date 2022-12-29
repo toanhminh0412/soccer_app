@@ -222,26 +222,32 @@ class SignupView(LoginRedirectMixin, TemplateView):
                     request.session['message'] = 'Password is not secure enough. Please try again with a different password.'
                     return redirect('/signup')
 
-                # Save information of the new user to session
-                request.session['signup_phone_number'] = phone_number
-                request.session['signup_password'] = password
-                request.session['signup_first_name'] = first_name
-                request.session['signup_last_name'] = last_name
-
                 # Generate a random code of length 10 to send to user
                 letters = string.ascii_lowercase
                 random_code = ''.join(random.choice(letters) for i in range(10))
 
                 # Send the code to phone number
                 client = Client(account_sid, auth_token)
-                message = client.messages\
-                    .create(
-                        body=f"Here is the confirmation code for Victoria Soccer App: {random_code}.\
-                                Have a nice day.",
-                        from_=twilio_phone_number,
-                        to=f'+1{phone_number}'
-                    )
-                print(message.sid)
+                try:
+                    message = client.messages\
+                        .create(
+                            body=f"Here is the confirmation code for Victoria Soccer App: {random_code}.\
+                                    Have a nice day.",
+                            from_=twilio_phone_number,
+                            to=f'+1{phone_number}'
+                        )
+                    print(message.sid)
+                # Throw an exception only if the phone number is invalid
+                except:
+                    request.session['success'] = False
+                    request.session['message'] = 'This phone number is invalid. Please try a different one.'
+                    return redirect('/signup')
+                
+                # Save information of the new user to session
+                request.session['signup_phone_number'] = phone_number
+                request.session['signup_password'] = password
+                request.session['signup_first_name'] = first_name
+                request.session['signup_last_name'] = last_name
 
                 # Save the code to the model for later comparison
                 request.session['signup_confirmation_code'] = random_code
@@ -351,14 +357,20 @@ class ResetPasswordView(LoginRedirectMixin, TemplateView):
 
                     # Get the code to phone number
                     client = Client(account_sid, auth_token)
-                    message = client.messages\
-                        .create(
-                            body=f"Here is the confirmation code for Victoria Soccer App: {random_code}.\
-                                 Have a nice day.",
-                            from_=twilio_phone_number,
-                            to=f'+1{phone_number}'
-                        )
-                    print(message.sid)
+                    try:
+                        message = client.messages\
+                            .create(
+                                body=f"Here is the confirmation code for Victoria Soccer App: {random_code}.\
+                                    Have a nice day.",
+                                from_=twilio_phone_number,
+                                to=f'+1{phone_number}'
+                            )
+                        print(message.sid)
+                    # Throw an exception only if the phone number is invalid
+                    except:
+                        request.session['success'] = False
+                        request.session['message'] = 'This phone number is invalid. Please try a different one.'
+                        return redirect('/signup')
 
                     # Save the code to the session for later comparison
                     request.session['reset_password_confirmation_code'] = random_code

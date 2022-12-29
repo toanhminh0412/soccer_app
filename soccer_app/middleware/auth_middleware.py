@@ -25,8 +25,6 @@ class AuthMiddleware():
         and request.path not in (LOGIN_PATH, LOGOUT_PATH, SIGNUP_PATH, RESET_PASSWORD_PATH, FAVICON_PATH)\
         and ADMIN_PATH not in request.path\
         and not request.session.get('user_id', None):
-            print('This middleware is called')
-            print(request.path)
             # If an authenticated user clicks on a link to join game,
             # they will be redirected to the join game url after logging in
             if ('join_game' in request.path or 'join_group' in request.path) and not request.session.get('user_id', None):
