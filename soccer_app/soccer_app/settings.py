@@ -20,7 +20,7 @@ import environ
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Enable the line below if need to specify the path of .env file
-environ.Env.read_env()
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -92,16 +92,29 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'soccer_app.wsgi.application'
 
+# Database
+# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+# Testing with psql container ran on amalthea
+# Enable this for deployment
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ.get('POSTGRES_NAME', 'pg_name'),
+        'USER': os.environ.get('POSTGRES_USER', 'pg_user'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'pg_password'),
+        'HOST': os.environ.get('POSTGRES_HOST', 'pg_host'),
+        'PORT': os.environ.get('POSTGRES_PORT', 5432),
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 
 # Password validation
