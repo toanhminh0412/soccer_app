@@ -249,6 +249,35 @@ def update_players(request, game_id):
 
     return JsonResponse({'status': 400, 'message': 'This method is not supported'})
 
+# Remove a player from a game
+def remove_player_from_game(request, game_id, player_id):
+    # Get current user
+    current_user = get_user(request)
+    game = None
+    try:
+        game = Game.objects.get(id=game_id)
+    except Game.DoesNotExist:
+        # Display 404 if game not found
+        return JsonResponse({'status': 404, 'message': 'Game not found'})
+
+    # If user isn't an organizer of the game, redirect to dashboard
+    if not game.is_organizer(current_user):
+        return JsonResponse({'status': 403, 'message': 'You are not authorized to edit players for this team'})
+    
+    try:
+        player = SoccerUser.objects.get(id=player_id)
+    except SoccerUser.DoesNotExist:
+        # Display 404 if player not found
+        return JsonResponse({'status': 404, 'message': 'Player not found'})
+
+    # Remove the player from the bench. Players in teams cannot be removed
+    bench = game.get_bench()
+    bench.players.remove(player)
+    
+    # Pass a success message into game detail's context
+    request.session['success'] = True
+    request.session['message'] = f'Remove player {player} from the game successfully'
+    return redirect(f'/game/{game_id}')
 
 # Create a group
 def modify_group(request, **kwargs):
