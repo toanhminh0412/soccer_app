@@ -45,6 +45,25 @@
 </div>
 {% endfor %}
 
+<!-- Modal for removing a player from the game -->
+<div class="modal fade" id="removePlayerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h1 class="modal-title fs-5" id="removePlayerModal">Remove player</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            Are you sure you want to remove player X from this game?
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <a type="button" class="btn btn-danger">Confirm</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="container mt-150">
     <!-- Team edit status message -->
     {% include 'soccer/components/message/status_message.html' %}
@@ -74,7 +93,7 @@
                 <h5>Bench</h5>
                 <div class="row">
                     {% for player in game_detail.get_bench.players.all %}
-                    <div class="col-4 col-lg-2 tag-container bg-light text-center mt-1">{{ player }}</div>
+                    <div class="col-4 col-lg-2 tag-container bg-light text-center mt-1 position-relative">{{ player }}<span class="position-absolute end-3"><button player-id="{{ player.id }}" player-name="{{ player }}" game-id="{{ game_detail.id }}" type="button" class="remove-player-btn btn-close" aria-label="Close" data-bs-toggle="modal" data-bs-target="#removePlayerModal"></button></span></div>
                     {% endfor %}
                 </div>
                 <div class="mt-3 fs-6 fst-italic">Captain will put you in a team</div>
@@ -102,7 +121,19 @@
         $(this).text('Copied');
         $(this).css({'color': 'black'})
     })
-    
+
+    // Clicking on an "X" in a player tag on the bench would make a modal that confirms
+    // player removal from the game visible
+    $('.remove-player-btn').click(function() {
+        const playerId = $(this).attr('player-id');
+        const playerName = $(this).attr('player-name');
+        const gameId = $(this).attr('game-id')
+        const removePlayerModalBody = $("#removePlayerModal .modal-body");
+        const removePlayerModalConfirmBtn = $("#removePlayerModal .btn-danger");
+        removePlayerModalBody.empty();
+        removePlayerModalBody.append(`Are you sure you want to remove player <span class="fw-semibold">${playerName}</span> from this game?`)
+        removePlayerModalConfirmBtn.attr('href', `/remove_player_from_game/${gameId}/${playerId}`)
+    })
 
     const addPlayerToTeam = el => {
         // Get player name, remove bench player
