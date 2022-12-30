@@ -57,8 +57,8 @@
         <h4 class="text-muted">{{ game_detail.location }}</h4>
         <div class="mt-3">
             <div class="row">
-                <div class="col-md-6"><strong class="me-2">Organizer:</strong>{{ game_detail.get_creator }}</div>
-                <div class="col-md-6"><strong class="me-2">Group:</strong>{% if game_detail.group %}{{ game_detail.group.name }}{% else %}Do not belong to a group{% endif %}</div>
+                <div class="col-md-6"><strong class="me-2">Organizer:</strong><span style="cursor: default;font-weight: 500;text-decoration: underline;" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-content="Phone number: {{ game_detail.get_creator.phone_number }}">{{ game_detail.get_creator }}</span></div>
+                <div class="col-md-6"><strong class="me-2">Group:</strong>{% if game_detail.group %}<a style="color:black;" href="/group/{{ game_detail.group.id }}">{{ game_detail.group.name }}</a>{% else %}Do not belong to a group{% endif %}</div>
             </div>
             <div class="row">
                 <div class="col-md-6"><strong class="me-2">Spaces left:</strong>{{ game_detail.max_player_num|subtract:game_detail.total_players }}</div>
@@ -77,7 +77,7 @@
                 <h5>Bench{% if soccer_user in game_detail.organizers.all %}<span><button type="button" id="bench-edit-btn" class="ms-3 btn btn-sm btn-outline-primary border-blue-200 text-blue-200">Edit players</button></span>{% endif %}</h5>
                 <div class="row">
                     {% for player in game_detail.get_bench.players.all %}
-                    <div class="col-4 col-lg-2 tag-container bg-light text-center mt-1 position-relative">{{ player }}{% if soccer_user in game_detail.organizers.all %}{% if player != soccer_user %}<span class="position-absolute end-3"><button player-id="{{ player.id }}" player-name="{{ player }}" game-id="{{ game_detail.id }}" type="button" class="remove-player-btn btn-close d-none" aria-label="Close" data-bs-toggle="modal" data-bs-target="#removePlayerModal"></button></span>{% endif %}{% endif %}</div>
+                    <div class="col-4 col-lg-2 tag-container bg-light text-center mt-1 position-relative" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-content="Phone number: {{ player.phone_number }}">{{ player }}{% if soccer_user in game_detail.organizers.all %}{% if player != soccer_user %}<span class="position-absolute end-3"><button player-id="{{ player.id }}" player-name="{{ player }}" game-id="{{ game_detail.id }}" type="button" class="remove-player-btn btn-close d-none" aria-label="Close" data-bs-toggle="modal" data-bs-target="#removePlayerModal"></button></span>{% endif %}{% endif %}</div>
                     {% endfor %}
                 </div>
                 <div class="mt-3 fs-6 fst-italic">Captain will put you in a team</div>
@@ -88,7 +88,7 @@
                     <div class="col-6 col-lg-{{team.get_team_num_on_a_row_lg}} mt-1">
                         <h5>Team {{ team.team_number }}{% if soccer_user in game_detail.organizers.all %}<span><button type="button" class="ms-3 btn btn-sm btn-outline-primary border-blue-200 text-blue-200" data-bs-toggle="modal" data-bs-target="#teamBuilderModal{{ team.id }}">Edit players</button></span>{% endif %}</h5>
                         {% for player in team.players.all %}
-                        <div class="tag-container {{team.get_color}} text-center mt-1">{{ player }}</div>
+                        <div class="tag-container {{team.get_color}} text-center mt-1" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-content="Phone number: {{ player.phone_number }}">{{ player }}</div>
                         {% endfor %}
                     </div>
                     {% endfor %}
