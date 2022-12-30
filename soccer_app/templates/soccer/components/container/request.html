@@ -1,5 +1,5 @@
 <div class="box-container mt-3">
-    <strong>{{ group_request.user.name }}</strong> requested to join group <a href="/group/{{ group_request.group.id }}" style="text-decoration: none;" class="fw-semibold">{{ group_request.group.name }}</a>
+    <strong>{{ group_request.user }}</strong> requested to join group <a href="/group/{{ group_request.group.id }}" style="text-decoration: none;" class="fw-semibold">{{ group_request.group.name }}</a>
     <div style="display: flex; flex-direction: row; width: fit-content;" class="my-2 ms-auto">
         <a href="/accept_request/{{ group_request.id }}" style="text-decoration: none;"><div class="text-btn">Accept</div></a>
         <a href="/decline_request/{{ group_request.id }}" style="text-decoration: none;"><div class="text-btn">Decline</div></a>
