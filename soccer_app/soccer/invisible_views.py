@@ -262,7 +262,7 @@ def remove_player_from_game(request, game_id, player_id):
 
     # If user isn't an organizer of the game, redirect to dashboard
     if not game.is_organizer(current_user):
-        return JsonResponse({'status': 403, 'message': 'You are not authorized to edit players for this team'})
+        return JsonResponse({'status': 403, 'message': 'You are not authorized to remove players for this game'})
     
     try:
         player = SoccerUser.objects.get(id=player_id)
@@ -276,7 +276,7 @@ def remove_player_from_game(request, game_id, player_id):
     
     # Pass a success message into game detail's context
     request.session['success'] = True
-    request.session['message'] = f'Remove player {player} from the game successfully'
+    request.session['message'] = f'Remove {player} from the game successfully'
     return redirect(f'/game/{game_id}')
 
 # Create a group
@@ -394,6 +394,35 @@ def delete_group(request, group_id):
     request.session['message'] = f'Group {name} deleted successfully'
 
     return redirect('/#groups')
+
+# Remove a member from a group
+def remove_member_from_group(request, group_id, member_id):
+    # Get current user
+    current_user = get_user(request)
+    group = None
+    try:
+        group = Group.objects.get(id=group_id)
+    except Group.DoesNotExist:
+        # Display 404 if group not found
+        return JsonResponse({'status': 404, 'message': 'Group not found'})
+
+    # If user isn't an admin of the group, redirect to dashboard
+    if current_user not in group.get_admins():
+        return JsonResponse({'status': 403, 'message': 'You are not authorized to remove members for this group'})
+    
+    try:
+        member = SoccerUser.objects.get(id=member_id)
+    except SoccerUser.DoesNotExist:
+        # Display 404 if member not found
+        return JsonResponse({'status': 404, 'message': 'Member not found'})
+
+    # Remove the member from the group
+    group.members.remove(member)
+    
+    # Pass a success message into group detail's context
+    request.session['success'] = True
+    request.session['message'] = f'Remove {member} from the group successfully'
+    return redirect(f'/group/{group_id}')
 
 # Accept a request to join a game or group
 def accept_request(request, request_id):

@@ -2,7 +2,13 @@
 {% load soccer_extras %}
 {% block title %}{{ group_detail.name }}{% endblock %}
 {% block content %}
+<!-- Modal for removing a member from a group -->
+{% include 'soccer/components/modal/remove_player_modal.html' %}
+
 <div class="container mt-150">
+    <!-- Group edit status message -->
+    {% include 'soccer/components/message/status_message.html' %}
+
     <!-- Group details -->
     <div class="box-container">
         <h2 class="text-underline">{{ group_detail.name }}</h1>
@@ -32,10 +38,10 @@
 
     <!-- Group members -->
     <div class="member-container box-container mt-3 d-none">
-        <h1 class="mb-3">Members</h1>
+        <h1 class="mb-3">Members {% if soccer_user in group_detail.get_admins %}<span><button type="button" id="member-edit-btn" class="ms-3 btn btn-sm btn-outline-primary border-blue-200 text-blue-200">Edit members</button></span>{% endif %}</h1>
         <div class="row">
             {% for member in group_detail.members.all %}
-            <div class="col-6 tag-container text-center mt-1 bg-blue-200">{{member}}</div>
+            <div class="col-6 tag-container text-center mt-1 bg-blue-200 position-relative">{{member}}{% if soccer_user in group_detail.get_admins %}{% if member != soccer_user %}<span class="position-absolute end-3"><button member-id="{{ member.id }}" member-name="{{ member }}" group-id="{{ group_detail.id }}" type="button" class="remove-member-btn btn-close d-none" aria-label="Close" data-bs-toggle="modal" data-bs-target="#removeMemberModal"></button></span>{% endif %}{% endif %}</div>
             {% endfor %}
         </div>
     </div>
@@ -59,6 +65,30 @@
         navigator.clipboard.writeText(link);
         $(this).text('Copied');
         $(this).css({'color': 'black'})
+    })
+
+    // Allow removing members from a group when clicking on "Edit members"
+    $('#member-edit-btn').click(function() {
+        if (!$(this).hasClass('active')) {
+            $(this).addClass('active');
+            $('.remove-member-btn').removeClass('d-none');
+        } else {
+            $(this).removeClass('active');
+            $('.remove-member-btn').addClass('d-none');
+        }
+    })
+
+    // Clicking on an "X" in a member tag would make a modal that confirms
+    // member removal from the group visible
+    $('.remove-member-btn').click(function() {
+        const memberId = $(this).attr('member-id');
+        const memberName = $(this).attr('member-name');
+        const groupId = $(this).attr('group-id')
+        const removeMemberModalBody = $("#removeMemberModal .modal-body");
+        const removeMemberModalConfirmBtn = $("#removeMemberModal .btn-danger");
+        removeMemberModalBody.empty();
+        removeMemberModalBody.append(`Are you sure you want to remove <span class="fw-semibold">${memberName}</span> from this group?`)
+        removeMemberModalConfirmBtn.attr('href', `/remove_member_from_group/${groupId}/${memberId}`)
     })
     
     // Toggle viewing games and members
