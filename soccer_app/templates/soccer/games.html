@@ -6,25 +6,30 @@
     <select class="custom-select-tag mt-5">
         <option value="all" selected>All games</option>
         <option value="yours">Your games</option>
+        <option value="others">Other games</option>
     </select>
 
-    <!-- Display of all games -->
-    <div class="mt-5 all-games-container">
+    <!-- Display of your games -->
+    <div class="mt-5 your-games-container">
+        <h1>Your upcoming games</h1>
         {% for game in all_games %}
+        {% if soccer_user in game.get_players %}
+        {% include 'soccer/components/container/game.html' %}
+        {% endif %}
+        {% endfor %}
+    </div>
+
+    <!-- Display of all games -->
+    <div class="mt-5 other-games-container">
+        <h1>Other games that you can join</h1>
+        {% for game in all_games %}
+        {% if soccer_user not in game.get_players %}
         <!-- Only render games that still have spaces -->
         {% if game.total_players < game.max_player_num %}
         {% if game.visible_to_everyone %}
         {% include 'soccer/components/container/game.html' %}
         {% endif %}
         {% endif %}
-        {% endfor %}
-    </div>
-
-    <!-- Display of your games -->
-    <div class="mt-5 your-games-container d-none">
-        {% for game in all_games %}
-        {% if soccer_user in game.get_players %}
-        {% include 'soccer/components/container/game.html' %}
         {% endif %}
         {% endfor %}
     </div>
@@ -37,19 +42,22 @@
     }
 
     // Render a text if there is no game
-    if ($('.all-games-container .card').length == 0) {
-        $('.all-games-container').append(`<div class="mt-5 text-center fs-5">No game found</div>`)
+    if ($('.other-games-container .card').length == 0) {
+        $('.other-games-container').append(`<div class="mt-5 text-center fs-5">No game found</div>`)
     }
 
     // Toggle viewing your games or all games
     $('.custom-select-tag').on('change', function() {
         const value = $(this).val();
-        if (value === 'yours') {
+        if (value === "all") {
             $('.your-games-container').removeClass('d-none');
-            $('.all-games-container').addClass('d-none');
+            $('.other-games-container').removeClass('d-none');
+        } else if (value === 'yours') {
+            $('.your-games-container').removeClass('d-none');
+            $('.other-games-container').addClass('d-none');
         } else {
             $('.your-games-container').addClass('d-none');
-            $('.all-games-container').removeClass('d-none');
+            $('.other-games-container').removeClass('d-none');
         }
     })
 </script>

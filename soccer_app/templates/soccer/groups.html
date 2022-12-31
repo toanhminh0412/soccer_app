@@ -9,11 +9,24 @@
     <select class="custom-select-tag mt-5">
         <option value="all" selected>All groups</option>
         <option value="yours">Your groups</option>
+        <option value="others">Other groups</option>
     </select>
 
-    <!-- Display of all groups -->
-    <div class="mt-5 all-groups-container">
+    <!-- Display of your groups -->
+    <div class="mt-5 your-groups-container">
+        <h1>Your groups</h1>
         {% for group in all_groups %}
+        {% if soccer_user in group.members.all %}
+        {% include 'soccer/components/container/group.html' %}
+        {% endif %}
+        {% endfor %}
+    </div>
+
+    <!-- Display of all groups -->
+    <div class="mt-5 other-groups-container">
+        <h1>Other groups that you can join</h1>
+        {% for group in all_groups %}
+        {% if soccer_user not in group.members.all %}
         <!-- Only render groups that still have spaces -->
         {% if group.max_member_num %}
         {% if group.members.count < group.max_member_num %}
@@ -22,14 +35,6 @@
         {% else %}
         {% include 'soccer/components/container/group.html' %}
         {% endif %}
-        {% endfor %}
-    </div>
-
-    <!-- Display of your groups -->
-    <div class="mt-5 your-groups-container d-none">
-        {% for group in all_groups %}
-        {% if soccer_user in group.members.all %}
-        {% include 'soccer/components/container/group.html' %}
         {% endif %}
         {% endfor %}
     </div>
@@ -42,19 +47,22 @@
     }
 
     // Render a text if there is no group
-    if ($('.all-groups-container .card').length == 0) {
-        $('.all-groups-container').append(`<div class="mt-5 text-center fs-5">No group found</div>`)
+    if ($('.other-groups-container .card').length == 0) {
+        $('.other-groups-container').append(`<div class="mt-5 text-center fs-5">No group found</div>`)
     }
 
     // Toggle viewing your groups or all groups
     $('.custom-select-tag').on('change', function() {
         const value = $(this).val();
-        if (value === 'yours') {
+        if (value === "all") {
             $('.your-groups-container').removeClass('d-none');
-            $('.all-groups-container').addClass('d-none');
+            $('.other-groups-container').removeClass('d-none');
+        } else if (value === 'yours') {
+            $('.your-groups-container').removeClass('d-none');
+            $('.other-groups-container').addClass('d-none');
         } else {
             $('.your-groups-container').addClass('d-none');
-            $('.all-groups-container').removeClass('d-none');
+            $('.other-groups-container').removeClass('d-none');
         }
     })
 </script>
