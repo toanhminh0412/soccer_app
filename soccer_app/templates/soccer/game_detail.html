@@ -111,7 +111,7 @@
                 </div>
             </div>
             <div class="w-fit ms-auto">
-                {% if user_id %}
+                {% if soccer_user != group.get_captain.user and soccer_user in game_detail.get_players%}
                 <button type="button" class="btn btn-light border-blue-200 text-blue-200" data-bs-toggle="modal" data-bs-target="#PlayerExitConfirmationModal">Leave game</button>
                 {% endif %}
             </div>
