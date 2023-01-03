@@ -23,6 +23,9 @@
             {% endif %}
             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editGroup{{ group.id }}FormModal">Edit group</button>
             {% else %}
+            {% if soccer_user in group.members.all %}
+            <a href="/Exit_group/{{ group.id }}" type="button" class="btn btn-danger btn-sm">Exit group</a>
+            {% endif %}
             <a href="/group/{{ group.id }}" type="button" class="btn btn-secondary btn-sm">View details</a>
             <a href="/request_to_join_group/{{ group.id }}" type="button" class="btn btn-success btn-sm {% if soccer_user in group.members.all %}disabled{% elif soccer_user in group.get_requested_users %}disabled{% endif %}">Request to join group</a>
             {% endif %}

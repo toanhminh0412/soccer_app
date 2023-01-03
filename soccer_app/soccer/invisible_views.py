@@ -345,6 +345,23 @@ def request_to_join_group(request, group_id):
 
     return redirect('/group')
 
+# User_Exit_Group
+def Exit_group(request, group_id):
+    # Return 404 if group is not found
+    try:
+        group = Group.objects.get(id=group_id)
+    except Group.DoesNotExist:
+        return JsonResponse({'status': 404, 'message': 'Group not found'})
+
+    # Get current user
+    current_user = get_user(request)
+
+    group.members.remove(current_user)
+    request.session['success'] = True
+    request.session['message'] = f'Exit group {group.name} successfully'
+
+    return redirect(f'/group')
+
 # Join group using an invite link
 def join_group(request, group_id):
     # Return 404 if group is not found

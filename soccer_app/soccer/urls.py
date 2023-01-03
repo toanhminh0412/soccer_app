@@ -18,8 +18,8 @@ urlpatterns = [
     path('join_game/<int:game_id>', invisible_views.join_game, name='join_game'),
     path('delete_game/<int:game_id>', invisible_views.delete_game, name='delete_game'),
     path('update_players/<int:game_id>', invisible_views.update_players, name='update_players'),
-    path('remove_player_from_game/<int:game_id>/<int:player_id>', invisible_views.remove_player_from_game,
-    name='remove_player_from_game'),
+    path('player_exit/<int:game_id>', invisible_views.player_exit, name='player_exit'),
+    path('Exit_group/<int:group_id>', invisible_views.Exit_group, name='Exit_group'),
 
     path('create_group', invisible_views.modify_group, name='create_group'),
     path('edit_group/<int:group_id>', invisible_views.modify_group, name='edit_group'),
