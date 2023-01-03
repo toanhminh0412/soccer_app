@@ -166,6 +166,24 @@ def join_game(request, game_id):
 
     return redirect(f'/game/{game_id}')
 
+# Exit game
+def player_exit(request, game_id):
+    if request.method == "GET":
+        # Get current user
+        current_user = get_user(request)
+        user_id = int(request.session['user_id'])
+        try:
+            game = Game.objects.get(id=game_id)
+            team_num = GameTeam.objects.get(players=user_id,game=game_id)
+        except Game.DoesNotExist:
+            return JsonResponse({'status': 404, 'message': 'Game not found'})
+        game.gameteam_set.get(team_number=team_num.team_number).players.remove(current_user)
+
+    request.session['success'] = True
+    request.session['message'] = f'Exit game {game.name} successfully'
+
+    return redirect(f'/game')
+
 # Admin View: Delete a game
 def delete_game(request, game_id):
     # Get current user
@@ -249,35 +267,6 @@ def update_players(request, game_id):
 
     return JsonResponse({'status': 400, 'message': 'This method is not supported'})
 
-# Remove a player from a game
-def remove_player_from_game(request, game_id, player_id):
-    # Get current user
-    current_user = get_user(request)
-    game = None
-    try:
-        game = Game.objects.get(id=game_id)
-    except Game.DoesNotExist:
-        # Display 404 if game not found
-        return JsonResponse({'status': 404, 'message': 'Game not found'})
-
-    # If user isn't an organizer of the game, redirect to dashboard
-    if not game.is_organizer(current_user):
-        return JsonResponse({'status': 403, 'message': 'You are not authorized to remove players for this game'})
-    
-    try:
-        player = SoccerUser.objects.get(id=player_id)
-    except SoccerUser.DoesNotExist:
-        # Display 404 if player not found
-        return JsonResponse({'status': 404, 'message': 'Player not found'})
-
-    # Remove the player from the bench. Players in teams cannot be removed
-    bench = game.get_bench()
-    bench.players.remove(player)
-    
-    # Pass a success message into game detail's context
-    request.session['success'] = True
-    request.session['message'] = f'Remove {player} from the game successfully'
-    return redirect(f'/game/{game_id}')
 
 # Create a group
 def modify_group(request, **kwargs):
@@ -394,35 +383,6 @@ def delete_group(request, group_id):
     request.session['message'] = f'Group {name} deleted successfully'
 
     return redirect('/#groups')
-
-# Remove a member from a group
-def remove_member_from_group(request, group_id, member_id):
-    # Get current user
-    current_user = get_user(request)
-    group = None
-    try:
-        group = Group.objects.get(id=group_id)
-    except Group.DoesNotExist:
-        # Display 404 if group not found
-        return JsonResponse({'status': 404, 'message': 'Group not found'})
-
-    # If user isn't an admin of the group, redirect to dashboard
-    if current_user not in group.get_admins():
-        return JsonResponse({'status': 403, 'message': 'You are not authorized to remove members for this group'})
-    
-    try:
-        member = SoccerUser.objects.get(id=member_id)
-    except SoccerUser.DoesNotExist:
-        # Display 404 if member not found
-        return JsonResponse({'status': 404, 'message': 'Member not found'})
-
-    # Remove the member from the group
-    group.members.remove(member)
-    
-    # Pass a success message into group detail's context
-    request.session['success'] = True
-    request.session['message'] = f'Remove {member} from the group successfully'
-    return redirect(f'/group/{group_id}')
 
 # Accept a request to join a game or group
 def accept_request(request, request_id):

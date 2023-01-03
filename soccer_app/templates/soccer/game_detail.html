@@ -2,6 +2,25 @@
 {% load soccer_extras %}
 {% block title %}{{ game_detail.name }}{% endblock %}
 {% block content %}
+
+<!-- Modal for deleting players -->
+<div class="modal fade" id="PlayerExitConfirmationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">Exit game</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+        Are you sure to exit <strong>{{ game.name }}</strong>?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <a href="/player_exit/{{ game_detail.id }}" type="button" class="btn btn-danger">Delete</a>
+        </div>
+      </div>
+    </div>
+</div>
 <!-- Modal for editing players in teams -->
 {% for team in game_detail.get_teams %}
 <div class="team-builder-modal modal fade" id="teamBuilderModal{{ team.id }}" tabindex="-1" aria-hidden="true">
@@ -45,9 +64,6 @@
 </div>
 {% endfor %}
 
-<!-- Modal for removing a player from the game -->
-{% include 'soccer/components/modal/remove_player_modal.html' %}
-
 <div class="container mt-150">
     <!-- Team edit status message -->
     {% include 'soccer/components/message/status_message.html' %}
@@ -57,8 +73,8 @@
         <h4 class="text-muted">{{ game_detail.location }}</h4>
         <div class="mt-3">
             <div class="row">
-                <div class="col-md-6"><strong class="me-2">Organizer:</strong><span style="cursor: default;font-weight: 500;text-decoration: underline;" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-content="Phone number: {{ game_detail.get_creator.phone_number }}">{{ game_detail.get_creator }}</span></div>
-                <div class="col-md-6"><strong class="me-2">Group:</strong>{% if game_detail.group %}<a style="color:black;" href="/group/{{ game_detail.group.id }}">{{ game_detail.group.name }}</a>{% else %}Do not belong to a group{% endif %}</div>
+                <div class="col-md-6"><strong class="me-2">Organizer:</strong>{{ game_detail.get_creator }}</div>
+                <div class="col-md-6"><strong class="me-2">Group:</strong>{% if game_detail.group %}{{ game_detail.group.name }}{% else %}Do not belong to a group{% endif %}</div>
             </div>
             <div class="row">
                 <div class="col-md-6"><strong class="me-2">Spaces left:</strong>{{ game_detail.max_player_num|subtract:game_detail.total_players }}</div>
@@ -74,10 +90,10 @@
         {% endif %}
         <div class="mt-3">
             <div>
-                <h5>Bench{% if soccer_user in game_detail.organizers.all %}<span><button type="button" id="bench-edit-btn" class="ms-3 btn btn-sm btn-outline-primary border-blue-200 text-blue-200">Edit players</button></span>{% endif %}</h5>
+                <h5>Bench</h5>
                 <div class="row">
                     {% for player in game_detail.get_bench.players.all %}
-                    <div class="col-4 col-lg-2 tag-container bg-light text-center mt-1 position-relative" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-content="Phone number: {{ player.phone_number }}">{{ player }}{% if soccer_user in game_detail.organizers.all %}{% if player != soccer_user %}<span class="position-absolute end-3"><button player-id="{{ player.id }}" player-name="{{ player }}" game-id="{{ game_detail.id }}" type="button" class="remove-player-btn btn-close d-none" aria-label="Close" data-bs-toggle="modal" data-bs-target="#removePlayerModal"></button></span>{% endif %}{% endif %}</div>
+                    <div class="col-4 col-lg-2 tag-container bg-light text-center mt-1">{{ player }}</div>
                     {% endfor %}
                 </div>
                 <div class="mt-3 fs-6 fst-italic">Captain will put you in a team</div>
@@ -88,11 +104,16 @@
                     <div class="col-6 col-lg-{{team.get_team_num_on_a_row_lg}} mt-1">
                         <h5>Team {{ team.team_number }}{% if soccer_user in game_detail.organizers.all %}<span><button type="button" class="ms-3 btn btn-sm btn-outline-primary border-blue-200 text-blue-200" data-bs-toggle="modal" data-bs-target="#teamBuilderModal{{ team.id }}">Edit players</button></span>{% endif %}</h5>
                         {% for player in team.players.all %}
-                        <div class="tag-container {{team.get_color}} text-center mt-1" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-content="Phone number: {{ player.phone_number }}">{{ player }}</div>
+                        <div class="tag-container {{team.get_color}} text-center mt-1">{{ player }}</div>
                         {% endfor %}
                     </div>
                     {% endfor %}
                 </div>
+            </div>
+            <div class="w-fit ms-auto">
+                {% if user_id %}
+                <button type="button" class="btn btn-light border-blue-200 text-blue-200" data-bs-toggle="modal" data-bs-target="#PlayerExitConfirmationModal">Leave game</button>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -105,30 +126,7 @@
         $(this).text('Copied');
         $(this).css({'color': 'black'})
     })
-
-    // Allow removing players from a game when clicking on "Edit player" for bench
-    $('#bench-edit-btn').click(function() {
-        if (!$(this).hasClass('active')) {
-            $(this).addClass('active');
-            $('.remove-player-btn').removeClass('d-none');
-        } else {
-            $(this).removeClass('active');
-            $('.remove-player-btn').addClass('d-none');
-        }
-    })
-
-    // Clicking on an "X" in a player tag on the bench would make a modal that confirms
-    // player removal from the game visible
-    $('.remove-player-btn').click(function() {
-        const playerId = $(this).attr('player-id');
-        const playerName = $(this).attr('player-name');
-        const gameId = $(this).attr('game-id')
-        const removePlayerModalBody = $("#removePlayerModal .modal-body");
-        const removePlayerModalConfirmBtn = $("#removePlayerModal .btn-danger");
-        removePlayerModalBody.empty();
-        removePlayerModalBody.append(`Are you sure you want to remove <span class="fw-semibold">${playerName}</span> from this game?`)
-        removePlayerModalConfirmBtn.attr('href', `/remove_player_from_game/${gameId}/${playerId}`)
-    })
+    
 
     const addPlayerToTeam = el => {
         // Get player name, remove bench player
