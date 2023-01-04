@@ -48,6 +48,8 @@ CSRF_TRUSTED_ORIGINS = json.loads(os.environ.get('TRUSTED_ORIGINS'))\
 # Prevent Django from automatically adding a slash at the end of urls
 APPEND_SLASH = False
 
+# Redirect all http requests to https requests
+SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'False') == 'True'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
