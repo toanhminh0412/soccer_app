@@ -231,7 +231,7 @@ class SignupView(LoginRedirectMixin, TemplateView):
                 try:
                     message = client.messages\
                         .create(
-                            body=f"Here is the confirmation code for Victoria Soccer App: {random_code}.\
+                            body=f"Here is the confirmation code for Vsport: {random_code}.\
                                     Have a nice day.",
                             from_=twilio_phone_number,
                             to=f'+1{phone_number}'
@@ -360,7 +360,7 @@ class ResetPasswordView(LoginRedirectMixin, TemplateView):
                     try:
                         message = client.messages\
                             .create(
-                                body=f"Here is the confirmation code for Victoria Soccer App: {random_code}.\
+                                body=f"Here is the confirmation code for Vsport: {random_code}.\
                                     Have a nice day.",
                                 from_=twilio_phone_number,
                                 to=f'+1{phone_number}'
