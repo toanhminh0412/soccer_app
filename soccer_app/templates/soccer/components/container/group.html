@@ -1,4 +1,22 @@
 {% load soccer_extras %}
+<!-- Modal for leaving group -->
+<div class="modal fade" id="leaveGroup{{ group.id }}ConfirmationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">Leave group</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+        Are you sure to leave <strong>{{ group.name }}</strong>?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <a href="/leave_group/{{ group.id }}" type="button" class="btn btn-danger">Leave</a>
+        </div>
+      </div>
+    </div>
+</div>
 <div class="card mt-3 border-success">
     <div class="card-header bg-success bg-opacity-75 text-white fw-semibold fs-4">
         {{ group.name }}
@@ -23,6 +41,9 @@
             {% endif %}
             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editGroup{{ group.id }}FormModal">Edit group</button>
             {% else %}
+            {% if soccer_user not in group.get_admins and soccer_user in group.members.all %}
+            <a href="/leave_group/{{ group.id }}" type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#leaveGroup{{ group.id }}ConfirmationModal">leave group</a>
+            {% endif %}
             <a href="/group/{{ group.id }}" type="button" class="btn btn-secondary btn-sm">View details</a>
             <a href="/request_to_join_group/{{ group.id }}" type="button" class="btn btn-success btn-sm {% if soccer_user in group.members.all %}disabled{% elif soccer_user in group.get_requested_users %}disabled{% endif %}">Request to join group</a>
             {% endif %}

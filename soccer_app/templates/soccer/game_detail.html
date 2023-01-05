@@ -2,6 +2,24 @@
 {% load soccer_extras %}
 {% block title %}{{ game_detail.name }}{% endblock %}
 {% block content %}
+<!-- Modal for deleting players -->
+<div class="modal fade" id="PlayerExitConfirmationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">Leave game</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+        Are you sure to leave <strong>{{ game.name }}</strong>?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <a href="/player_leave_game/{{ game_detail.id }}" type="button" class="btn btn-danger">Delete</a>
+        </div>
+      </div>
+    </div>
+</div>
 <!-- Modal for editing players in teams -->
 {% for team in game_detail.get_teams %}
 <div class="team-builder-modal modal fade" id="teamBuilderModal{{ team.id }}" tabindex="-1" aria-hidden="true">
@@ -92,6 +110,11 @@
                         {% endfor %}
                     </div>
                     {% endfor %}
+                </div>
+                <div class="w-fit ms-auto" style="margin-top:30px;">
+                    {% if soccer_user != game_detail.get_creator and soccer_user in game_detail.get_players%}
+                    <button type="button" class="btn btn-light border-blue-200 text-blue-200" data-bs-toggle="modal" data-bs-target="#PlayerExitConfirmationModal">Leave game</button>
+                    {% endif %}
                 </div>
             </div>
         </div>
