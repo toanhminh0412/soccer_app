@@ -43,7 +43,7 @@ class Dashboard(MessageViewMixin, TemplateView):
         return context
 
 # GamesView that shows all the currently active game
-class GamesView(ListView):
+class GamesView(MessageViewMixin, ListView):
     model = Game
     template_name = "soccer/games.html"
     context_object_name = "all_games"

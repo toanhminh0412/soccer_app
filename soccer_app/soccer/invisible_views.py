@@ -167,22 +167,20 @@ def join_game(request, game_id):
     return redirect(f'/game/{game_id}')
 
 # Player leave game
-def player_leave_game(request, game_id):
-    if request.method == "GET":
-        # Get current user
-        current_user = get_user(request)
-        user_id = int(request.session['user_id'])
-        try:
-            game = Game.objects.get(id=game_id)
-            team = current_user.gameteam_set.get(game=game_id)
-            team.players.remove(current_user)
-        except Game.DoesNotExist:
-            return JsonResponse({'status': 404, 'message': 'Game not found'})
+def leave_game(request, game_id):
+    # Get current user
+    current_user = get_user(request)
+    try:
+        game = Game.objects.get(id=game_id)
+        team = current_user.gameteam_set.get(game=game_id)
+        team.players.remove(current_user)
+    except Game.DoesNotExist:
+        return JsonResponse({'status': 404, 'message': 'Game not found'})
 
     request.session['success'] = True
-    request.session['message'] = f'Exit game {game.name} successfully'
+    request.session['message'] = f'Leave game {game.name} successfully'
 
-    return redirect(f'/game')
+    return redirect('/game')
 
 # Admin View: Delete a game
 def delete_game(request, game_id):
@@ -338,7 +336,7 @@ def modify_group(request, **kwargs):
     # Sending other methods to this view will receive an 400
     return JsonResponse({'status': 400, 'message': "This page doesn't support this method"})
 
-# User_Exit_Group
+# A member leaves a group
 def leave_group(request, group_id):
     # Return 404 if group is not found
     try:

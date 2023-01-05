@@ -2,6 +2,9 @@
 {% block title %}Games{% endblock %}
 {% block content %}
 <div class="container mt-150">
+    <!-- Game status message -->
+    {% include 'soccer/components/message/status_message.html' %}
+
     <label class="fs-5 me-2 mt-5">View:</label>
     <select class="custom-select-tag mt-5">
         <option value="all" selected>All games</option>
