@@ -51,7 +51,7 @@ class Group(RandomIDModel):
     def __str__(self):
         return self.name
 
-    # Return type: an SoccerUser
+    # Return type: a GroupAdmin
     # Return value: the captain of a group
     def get_captain(self):
         return self.groupadmin_set.get(captain=True)

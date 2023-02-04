@@ -5,6 +5,20 @@
     <!-- Game create status message -->
     {% include 'soccer/components/message/status_message.html' %}
 
+    <!-- Render forms for editing groups -->
+    {% for group in all_groups %}
+    {% if soccer_user in group.get_admins %}
+    {% include 'soccer/components/form/group.html' %}
+    {% endif %}
+    {% endfor %}
+
+    <!-- Render modal for deleting groups. Only captains can delete their groups -->
+    {% for group in all_groups %}
+    {% if soccer_user == group.get_captain.user %}
+    {% include 'soccer/components/modal/delete_group.html' %}
+    {% endif %}
+    {% endfor %}
+
     <label class="fs-5 me-2 mt-5">View:</label>
     <select class="custom-select-tag mt-5">
         <option value="all" selected>All groups</option>

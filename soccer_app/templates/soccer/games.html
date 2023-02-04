@@ -5,6 +5,14 @@
     <!-- Game status message -->
     {% include 'soccer/components/message/status_message.html' %}
 
+    <!-- Render modals for deleting and editing games -->
+    {% for game in all_games %}
+    {% if soccer_user in game.organizers.all %}
+    {% include 'soccer/components/modal/delete_game.html' %}
+    {% include 'soccer/components/form/game.html' %}
+    {% endif %}
+    {% endfor %}
+
     <label class="fs-5 me-2 mt-5">View:</label>
     <select class="custom-select-tag mt-5">
         <option value="all" selected>All games</option>
